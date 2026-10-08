@@ -1,26 +1,215 @@
 @import "tailwindcss";
 
+/* Tema escuro é o padrão. A classe .light inverte as cores só naquela seção. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #070d18;
+  --surface: #0d1626;
+  --surface-2: #121e33;
+  --line: #1d2b45;
+  --ink: #f4f7fb;
+  --muted: #9fb0c7;
+  --accent: #4db8ea;
+  --accent-ink: #04101a;
+  --warn: #f2c14e;
+  --warn-bg: rgb(242 193 78 / 0.1);
+  --warn-line: rgb(242 193 78 / 0.45);
+}
+
+.light {
+  --bg: #f6f3ec;
+  --surface: #ffffff;
+  --surface-2: #efebe1;
+  --line: #ddd7c9;
+  --ink: #0b1424;
+  --muted: #4b5870;
+  --accent: #0a6ea3;
+  --accent-ink: #ffffff;
+  --warn: #7a4e00;
+  --warn-bg: #fff1cc;
+  --warn-line: #e0b64f;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-line: var(--warn-line);
+  --color-wa: #25d366;
+  --font-display: var(--font-bebas), "Arial Narrow", Impact, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
+  background: #070d18;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@utility scroll-anchor {
+  scroll-margin-top: 5.5rem;
+}
+
+@layer components {
+  /* Título principal: condensada, maiúscula, sem efeito. */
+  .display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    line-height: 0.95;
+  }
+  .h1 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    line-height: 0.95;
+    font-size: clamp(3.25rem, 9vw, 6rem);
+  }
+  /* Título de seção: Inter, frase normal, tom editorial. */
+  .h2-section {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-size: clamp(1.9rem, 4.2vw, 2.9rem);
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .eyebrow::before {
+    content: "";
+    width: 1.75rem;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3rem;
+    padding: 0.7rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 0.625rem;
+    border: 1px solid transparent;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.1);
+  }
+  .btn-wa {
+    background: #25d366;
+    color: #04210f;
+  }
+  .btn-wa:hover {
+    background: #3fe07f;
+  }
+  .btn-ghost {
+    border-color: var(--line);
+    color: var(--ink);
+    background: transparent;
+  }
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+/* ---------- Animações ---------- */
+[data-reveal] {
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms),
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms);
+}
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-3%, 4%, 0);
+  }
+}
+
+/* Entrada do hero ao carregar a página */
+.hero-in {
+  animation: fade-up 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+.drift {
+  animation: drift 14s ease-in-out infinite;
+}
+
+/* Cards que sobem de leve no hover */
+.lift {
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+.lift:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
 }
