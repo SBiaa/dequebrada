@@ -77,7 +77,7 @@ body {
 }
 
 @utility scroll-anchor {
-  scroll-margin-top: 5.5rem;
+  scroll-margin-top: 7rem;
 }
 
 @layer components {

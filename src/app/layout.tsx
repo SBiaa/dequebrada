@@ -43,8 +43,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Pular para o conteúdo
         </a>
-        <ProposalBanner />
-        <Header />
+        <div className="sticky top-0 z-50">
+          <ProposalBanner />
+          <Header />
+        </div>
         <main id="conteudo">{children}</main>
         <Footer />
         <WhatsAppFloat />
