@@ -129,6 +129,18 @@ export async function requireAdmin(nextPath = "/painel"): Promise<SessionUser> {
   return user;
 }
 
+/** Qualquer conta logada (episódios, minha conta). */
+export async function requireUser(nextPath: string): Promise<SessionUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect(`/entrar?next=${encodeURIComponent(nextPath)}`);
+  return user;
+}
+
+/** Assinante liberado pelo admin (o admin também tem acesso). */
+export function canSeeExclusive(user: SessionUser | null): boolean {
+  return !!user && (user.isSubscriber || user.role === "admin");
+}
+
 /** Apaga todas as sessões de um usuário (após troca de senha). */
 export async function destroyAllSessions(userId: string): Promise<void> {
   await db.delete(sessions).where(eq(sessions.userId, userId));

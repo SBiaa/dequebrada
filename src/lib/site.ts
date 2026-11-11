@@ -32,6 +32,7 @@ export const WHATSAPP_MESSAGES = {
   parceiro: `${base} ser parceiro ou patrocinador do De Quebrada`,
   estudio: `${base} agendar uma gravação no Estúdio de Quebrada`,
   loja: `${base} saber sobre os produtos da loja`,
+  assinatura: `${base} assinar a área de membros`,
 } as const;
 
 /** Menu principal (cabeçalho e rodapé). */

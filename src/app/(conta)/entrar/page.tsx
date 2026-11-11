@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function EntrarPage({ searchParams }: PageProps<"/entrar">) {
   const sp = await searchParams;
-  const next = typeof sp.next === "string" ? sp.next : "/painel";
+  const next = typeof sp.next === "string" ? sp.next : "";
   const notice = sp.senha === "alterada" ? "Senha alterada. Entre com a nova senha." : undefined;
   return (
     <AuthCard title="Entrar" lead="Acesse sua conta no De Quebrada.">

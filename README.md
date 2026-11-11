@@ -53,6 +53,35 @@ npm run db:migrate    # aplica no banco do DATABASE_URL_UNPOOLED
 
 A migração inicial já foi aplicada no banco Neon `dequebrada-db` (projeto Vercel `dequebrada-proposta`).
 
+## Área de membros
+
+- `/cadastro`: nome, e-mail, senha e aceite da Política de Privacidade (obrigatório, data gravada).
+- `/membros`: pública para quem não tem conta (explica e chama para o cadastro). Logado, mostra o status da assinatura.
+- `/membros/episodios`: episódios do De Quebrada Podcast tocando no site (player `youtube-nocookie`). Exige conta (grátis). Sem `YOUTUBE_API_KEY` aparecem só os mais recentes; com a chave, todos. Lista em cache de 1 hora.
+- `/membros/conteudos/[slug]`: conteúdos exclusivos (vídeo/aula do YouTube "não listado", PDF ou link). **Só assinantes**: a checagem é no servidor, e o PDF sai por `/membros/arquivo/[id]`, que confere a assinatura a cada download (sem link público).
+- `/conta`: dados da conta, trocar senha, sair e **excluir conta e dados** (LGPD, pede a senha).
+- Painel: `/painel/assinantes` (liberar ou retirar acesso manualmente) e `/painel/conteudos` (criar, publicar, tirar do ar, excluir; PDF até 4 MB guardado no banco).
+
+**Cobrança ainda não implementada.** Hoje: a pessoa cria a conta → paga por fora (WhatsApp) → o Carlos clica em "Liberar acesso".
+
+### Cobrança recorrente: opções para decidir com o cliente
+
+Taxas aproximadas; conferir no site de cada um antes de fechar.
+
+| | Mercado Pago (Assinaturas) | Stripe (Billing) | Hotmart / Kiwify |
+|---|---|---|---|
+| Pagamento recorrente | Cartão | Cartão | Cartão (e Pix/boleto conforme o plano) |
+| Taxa | ~4–5% no cartão | ~4–5% + tarifa fixa + taxa do Billing | ~9–10% + tarifa fixa por venda |
+| Checkout | Do Mercado Pago | Do Stripe (ou embutido) | Pronto, com página de vendas e afiliados |
+| Integração aqui | Webhook marca `isSubscriber` | Webhook + portal do assinante (cancelar, trocar cartão) | Webhook marca `isSubscriber` |
+| Bom para | Público que já usa MP | Controle e menor custo em escala | Quem já vende cursos lá e quer afiliados |
+
+Em todas, o login continua sendo o deste site; a plataforma só avisa quem pagou ou cancelou.
+
+### Aviso de cookies
+
+Só aparece se `NEXT_PUBLIC_META_PIXEL_ID` ou `NEXT_PUBLIC_GA_ID` estiverem configurados. Pixel e GA só carregam depois de "Aceitar". O cookie de login (`dq_session`) é essencial e não depende do aviso.
+
 ## Páginas
 
 Mesma estrutura do site atual, com texto real e URLs sem acento.
@@ -66,7 +95,7 @@ Mesma estrutura do site atual, com texto real e URLs sem acento.
 | `/publicidade` | (cardápio de serviços) | Cardápio de publicidade e mídia kit resumido |
 | `/parceiros` | (não existia) | Patrocinadores e parceiros com links para as redes |
 | `/loja` | (não existia) | Vitrine com filtro por categoria. Compra pelo WhatsApp (mensagem com produto, variação e código) ou link externo |
-| `/membros` | (não existia) | "Em breve" até a fase 5 |
+| `/membros` | (não existia) | Área de membros: cadastro, episódios do YouTube no site e conteúdos exclusivos para assinantes |
 | `/daquebradaaodigital` | `/daquebradaaodigital` | Mesma URL da divulgação. Página de vendas completa (pra quem é, módulos, como funciona, depoimentos, incluso, garantia, FAQ). `/da-quebrada-ao-digital` redireciona para cá |
 | `/presenca-digital` | `/presençadigital` (com cedilha) | URL sem acento, canais e números em texto |
 | `/sobre` | `/sobre` | História, equipe, valores, "Onde nos encontrar" (todos os canais), endereço com mapa e telefone |
@@ -84,6 +113,8 @@ O mapa do Google em `/sobre` só carrega quando a pessoa clica em "Mostrar mapa"
 | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Neon Postgres (criado pela integração; já configurado na Vercel) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob para as capas (já configurado na Vercel) |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Envio do e-mail de nova senha. **Falta configurar** |
+| `YOUTUBE_CHANNEL_ID` | Canal do podcast: `UCPAZis3gDcWz67DUwtjaPJg`. **Falta adicionar na Vercel** |
+| `YOUTUBE_API_KEY` | Opcional: lista todos os episódios (sem ela, só os ~15 mais recentes) |
 | `SITE_URL` | Domínio final (links de e-mail, sitemap, RSS, Open Graph) |
 | `CHECKOUT_URL_DA_QUEBRADA_AO_DIGITAL` | Link de checkout da formação (https). Sem ele, os botões de compra vão para o WhatsApp. Após mudar na Vercel, faça um novo deploy |
 
@@ -126,6 +157,10 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | `[E-MAIL REAL AQUI]` | Rodapé e páginas legais |
 | `[PRODUTO EXEMPLO]`, `[DESCRIÇÃO DO PRODUTO...]`, `[DEFINIR PREÇO]`, `[FOTO DO PRODUTO]` | Loja: lista real, fotos, preços e se cada um vende por WhatsApp ou link externo (e qual link) |
 | `[COMO FUNCIONA A ENTREGA OU RETIRADA]` | Loja |
+| Valor da assinatura `[DEFINIR]` e forma de pagamento | Área de membros |
+| Escolha da plataforma de cobrança | Ver tabela "Cobrança recorrente" |
+| `[PLATAFORMA DE PAGAMENTO, QUANDO HOUVER]` | Política de Privacidade |
+| Primeiros conteúdos exclusivos | Pelo painel |
 | Conta do Carlos no painel | `npm run admin:create` com o e-mail dele |
 | Resend (conta + domínio verificado) | E-mail de "esqueci minha senha" |
 | Categorias e primeiros posts | Pelo painel |

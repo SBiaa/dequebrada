@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Capas do blog e PDFs de membros vão até 4 MB (+ margem do formulário).
+    serverActions: { bodySizeLimit: "4.4mb" },
+  },
   async redirects() {
     return [
       // O conteúdo do podcast foi para /estudio (estúdio + participação no podcast).

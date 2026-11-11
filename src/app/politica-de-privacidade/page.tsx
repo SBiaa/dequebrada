@@ -19,7 +19,8 @@ const SECTIONS: LegalSection[] = [
     list: [
       "Dados que você informa ao falar com a gente pelo WhatsApp, como nome, telefone e o conteúdo das mensagens.",
       "Dados de navegação, como páginas visitadas, tipo de dispositivo e navegador, coletados por ferramentas de métricas e de anúncios quando ativadas (Google Analytics e Pixel da Meta).",
-      "Este site não possui formulário de cadastro nem área de login.",
+      "Se você criar uma conta na área de membros: nome, e-mail, senha (guardada só de forma cifrada, com hash; nós não conseguimos lê-la), data do aceite desta política e se a sua assinatura está ativa.",
+      "Dados técnicos de segurança da conta: sessões de login e registro temporário de tentativas de acesso com erro (e-mail e endereço IP), apagado em até 24 horas.",
     ],
   },
   {
@@ -29,6 +30,8 @@ const SECTIONS: LegalSection[] = [
       "Elaborar propostas e prestar os serviços contratados.",
       "Entender como o site é usado para melhorá-lo.",
       "Medir e otimizar campanhas de divulgação.",
+      "Criar e manter sua conta na área de membros, liberar o acesso de assinante e enviar e-mails da conta, como o link de nova senha.",
+      "Proteger as contas contra acessos indevidos.",
     ],
   },
   {
@@ -40,13 +43,15 @@ const SECTIONS: LegalSection[] = [
   {
     heading: "Compartilhamento",
     paragraphs: [
-      "Não vendemos dados pessoais. Podemos compartilhá-los com prestadores que nos ajudam a operar o site e a comunicação, como Meta (WhatsApp e Pixel), Google (Analytics) e a plataforma de hospedagem, e com autoridades quando a lei exigir.",
+      "Não vendemos dados pessoais. Podemos compartilhá-los com prestadores que nos ajudam a operar o site e a comunicação, como Meta (WhatsApp e Pixel), Google (Analytics e YouTube, nos vídeos incorporados), Vercel (hospedagem), Neon (banco de dados), Resend (envio de e-mails) e [PLATAFORMA DE PAGAMENTO, QUANDO HOUVER], e com autoridades quando a lei exigir.",
     ],
   },
   {
     heading: "Cookies e tecnologias semelhantes",
     paragraphs: [
-      "Quando ativadas, as ferramentas de métricas e anúncios usam cookies para identificar visitas e ações, como o clique nos botões de WhatsApp. Você pode bloquear ou apagar cookies nas configurações do navegador. [A CONFIRMAR: aviso de cookies no site]",
+      "Quando ativadas, as ferramentas de métricas e anúncios usam cookies para identificar visitas e ações, como o clique nos botões de WhatsApp. Você pode bloquear ou apagar cookies nas configurações do navegador. Essas ferramentas só são carregadas depois que você clica em “Aceitar” no aviso de cookies; se recusar, elas não são usadas.",
+      "Quem faz login recebe um cookie essencial de sessão (dq_session), necessário para manter a conta conectada. Ele não é usado para anúncios.",
+      "Os vídeos são exibidos no modo de privacidade aprimorada do YouTube (youtube-nocookie.com). O mapa da página Sobre só carrega, com cookies do Google, se você clicar em \"Mostrar mapa\".",
     ],
   },
   {
@@ -65,6 +70,12 @@ const SECTIONS: LegalSection[] = [
       "Portabilidade dos dados.",
       "Informação sobre com quem compartilhamos seus dados.",
       "Revogação do consentimento.",
+    ],
+  },
+  {
+    heading: "Como excluir sua conta e seus dados",
+    paragraphs: [
+      "Quem tem conta pode excluí-la a qualquer momento em Minha conta (/conta), botão \"Excluir minha conta e meus dados\". A exclusão apaga nome, e-mail, senha e sessões na hora. Também é possível pedir pelo WhatsApp ou e-mail abaixo.",
     ],
   },
   {

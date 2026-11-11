@@ -1,5 +1,6 @@
 import {
   boolean,
+  customType,
   index,
   integer,
   pgTable,
@@ -89,3 +90,39 @@ export const posts = pgTable(
 export type User = typeof users.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type Category = typeof categories.$inferSelect;
+
+/** Bytes de arquivo (PDF) guardados no banco: só saem por rota que confere a assinatura. */
+const bytea = customType<{ data: Buffer; driverData: string | Buffer }>({
+  dataType: () => "bytea",
+  // O driver HTTP do Neon trafega bytea como texto hexadecimal ("\x...").
+  toDriver: (value) => `\\x${value.toString("hex")}`,
+  fromDriver: (value) =>
+    Buffer.isBuffer(value) ? value : Buffer.from(String(value).replace(/^\\x/, ""), "hex"),
+});
+
+/** Arquivos exclusivos de assinantes (PDF até 4 MB). */
+export const memberFiles = pgTable("member_files", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  mime: text("mime").notNull(),
+  size: integer("size").notNull(),
+  data: bytea("data").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Conteúdos exclusivos (vídeos, aulas, PDFs, links), cadastrados pelo painel. */
+export const memberContents = pgTable("member_contents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  kind: text("kind", { enum: ["video", "aula", "pdf", "link"] }).notNull(),
+  /** ID do vídeo no YouTube (pode ser "não listado"). */
+  youtubeId: text("youtube_id"),
+  externalUrl: text("external_url"),
+  fileId: uuid("file_id").references(() => memberFiles.id, { onDelete: "set null" }),
+  published: boolean("published").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type MemberContent = typeof memberContents.$inferSelect;

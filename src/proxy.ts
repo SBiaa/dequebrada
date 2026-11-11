@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * Primeira barreira do painel: sem cookie de sessão, manda para o login.
- * A checagem de verdade (sessão válida e papel de admin) é feita no servidor,
+ * A checagem de verdade (sessão válida, papel de admin, assinatura) é feita no servidor,
  * no layout do painel e em cada Server Action.
  */
 export function proxy(request: NextRequest) {
@@ -16,5 +16,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/painel/:path*"],
+  // /membros (página inicial) é pública; as subpáginas exigem login.
+  matcher: ["/painel/:path*", "/membros/:path+", "/conta"],
 };
