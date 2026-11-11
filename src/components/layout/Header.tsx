@@ -1,13 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_LINKS, WHATSAPP_MESSAGES } from "@/lib/site";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { Logo } from "./Logo";
 
+function isActive(pathname: string, href: string): boolean {
+  return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!open) return;
@@ -24,29 +30,28 @@ export function Header() {
         <Logo />
 
         <nav aria-label="Principal" className="hidden xl:block">
-          <ul className="flex items-center gap-5">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-[0.92rem] font-medium text-muted transition-colors hover:text-ink"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+          <ul className="flex items-center gap-4">
+            {NAV_LINKS.map((link) => {
+              const active = isActive(pathname, link.href);
+              const isMembers = link.href === "/membros";
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={active ? "page" : undefined}
+                    className={
+                      isMembers
+                        ? "btn btn-ghost !min-h-10 !px-4 !text-[0.9rem]"
+                        : `text-[0.9rem] font-medium transition-colors hover:text-ink ${active ? "text-ink" : "text-muted"}`
+                    }
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
-
-        <div className="hidden xl:block">
-          <WhatsAppButton
-            message={WHATSAPP_MESSAGES.geral}
-            source="header"
-            className="btn btn-wa !min-h-10 !px-4 !text-[0.92rem]"
-          >
-            Falar no WhatsApp
-          </WhatsAppButton>
-        </div>
 
         <button
           type="button"
@@ -74,7 +79,7 @@ export function Header() {
         <nav
           id="menu-mobile"
           aria-label="Menu mobile"
-          className="border-t border-line bg-bg px-5 pb-6 pt-2 xl:hidden"
+          className="max-h-[calc(100dvh-6rem)] overflow-y-auto border-t border-line bg-bg px-5 pb-6 pt-2 xl:hidden"
         >
           <ul>
             {NAV_LINKS.map((link) => (
@@ -82,7 +87,8 @@ export function Header() {
                 <Link
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="block py-4 text-lg font-semibold"
+                  aria-current={isActive(pathname, link.href) ? "page" : undefined}
+                  className="block py-3.5 text-lg font-semibold aria-[current=page]:text-accent"
                 >
                   {link.label}
                 </Link>

@@ -31,24 +31,37 @@ Mesma estrutura do site atual, com texto real e URLs sem acento.
 | `/` | Só um carrossel de notícias | Home com notícias, produtos, Carlos, canais, provas, FAQ e CTA |
 | `/news` | `/blog` | Filtro por cidade, cards com cidade e tempo de leitura |
 | `/business` | `/dequebradabusiness` | Página era um iframe sem texto indexável; agora é texto real |
-| `/podcast` | `/podcasts` | Idem, com tabela de preços acessível |
+| `/estudio` | `/podcasts` | Estúdio + participação no podcast, galeria e FAQ. `/podcast` e `/podcasts` redirecionam para cá |
+| `/publicidade` | (cardápio de serviços) | Cardápio de publicidade e mídia kit resumido |
+| `/parceiros` | (não existia) | Patrocinadores e parceiros com links para as redes |
+| `/loja`, `/membros` | (não existiam) | "Em breve" até as fases 4 e 5 |
 | `/da-quebrada-ao-digital` | `/daquebradaaodigital` | Idem |
 | `/presenca-digital` | `/presençadigital` (com cedilha) | URL sem acento, canais e números em texto |
-| `/sobre` | `/sobre` | Texto real, "Realizações" a enviar em texto |
+| `/sobre` | `/sobre` | História, equipe, valores, "Onde nos encontrar" (todos os canais), endereço com mapa e telefone |
 | 4 páginas legais | Links levavam à home | Páginas reais (texto-base a validar com jurídico) |
 
 ## Pixel da Meta e Google Analytics
 
-Só carregam se as variáveis existirem. Todo clique em botão de WhatsApp dispara o evento `Lead`.
+Só carregam se as variáveis existirem. Todo clique em botão de WhatsApp dispara o evento `Lead`. Outros CTAs de venda (ex.: "Quero ser parceiro") disparam `CTA` no Pixel e `cta_click` no GA.
+O mapa do Google em `/sobre` só carrega quando a pessoa clica em "Mostrar mapa".
 
 | Variável | Para quê |
 |---|---|
 | `NEXT_PUBLIC_META_PIXEL_ID` | Pixel da Meta |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics (ex.: `G-XXXXXXXXXX`) |
 
-## Onde editar
+## Menu
 
-- `src/lib/site.ts`: telefone, endereço, CNPJ, mensagens de WhatsApp, menu e links de redes.
+Início, Da Quebrada ao Digital, Estúdio, Publicidade, Blog, Loja, Parceiros, Sobre, Área de membros. Business e Presença Digital saíram do menu, mas continuam no ar, com link no rodapé.
+Até a fase 3, "Blog" aponta para `/news`. Até a fase 2, a formação continua em `/da-quebrada-ao-digital`.
+
+## Onde editar (sem mexer em componente)
+
+- `src/lib/site.ts`: telefone, endereço, CNPJ, mensagens de WhatsApp, menu.
+- `src/data/channels.ts`: **todas as redes e canais** (usado no rodapé, home, Sobre e Presença Digital).
+- `src/data/studio.ts`: pacotes, preços, serviços avulsos, galeria e FAQ do estúdio.
+- `src/data/advertising.ts`: cardápio de publicidade e mídia kit.
+- `src/data/partners.ts`: parceiros e patrocinadores (logo em `/public/parceiros/`).
 - `src/lib/news.ts`: notícias de exemplo (no site final vêm do blog/CMS).
 - `src/app/*/page.tsx`: cada página. `src/components/sections/`: seções da home.
 
@@ -78,6 +91,15 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | `[FOTO ... AQUI]` | Fotos do Carlos e do estúdio |
 | `[RAZÃO SOCIAL]`, `[DATA]`, foro, DPO, prazos de reembolso | Páginas legais |
 | Depoimentos/cases do Raio-X | Seção Raio-X da Quebrada na home |
+| `[ANO DE INÍCIO]`, `[COMPLETAR A HISTÓRIA...]` | Sobre: história |
+| `[NOME DA PESSOA DA EQUIPE]`, `[FUNÇÃO]`, `[VALOR A CONFIRMAR]` | Sobre: equipe e valores |
+| `[HORÁRIO DE ATENDIMENTO]` | Sobre: contato |
+| `[EXEMPLO]` e `[DEFINIR]` no cardápio | Publicidade: cardápio oficial (aguardando) |
+| `[CONFERIR NÚMERO]` | Publicidade: alcance mensal (1,3M views ou 800k pessoas?) |
+| `[PERFIL DO PÚBLICO...]` | Publicidade: mídia kit |
+| `[PATROCINADOR/PARCEIRO EXEMPLO]`, `[LOGO]` | Parceiros: lista real, logos e links |
+| `[A CONFIRMAR]` no FAQ do estúdio | Equipamentos, capacidade, pagamento, critérios de entrevista |
+| `[FOTO DO ESTÚDIO ...]` | Estúdio: 4 fotos da galeria |
 
 Observações:
 - As notícias da home e de `/news` são exemplos reais do portal atual e abrem a notícia no site atual. Para o site final, o portal precisa de um CMS ou blog próprio.

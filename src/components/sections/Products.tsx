@@ -17,7 +17,7 @@ const PRODUCTS: { name: string; tag: string; text: string; href: string; cta: st
     name: "Podcast e Estúdio",
     tag: "Visibilidade",
     text: "Seja entrevistado ou lance seu programa, com edição e cortes prontos.",
-    href: "/podcast",
+    href: "/estudio",
     cta: "Ver pacotes e preços",
   },
   {

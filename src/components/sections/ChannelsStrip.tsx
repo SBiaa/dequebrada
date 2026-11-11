@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { SOCIAL_LINKS } from "@/lib/site";
+import { MAIN_CHANNELS } from "@/data/channels";
 import { stagger } from "@/lib/motion";
 import { Section } from "@/components/ui/Section";
-import { SocialIcon, platformOf } from "@/components/ui/SocialIcon";
+import { SocialIcon } from "@/components/ui/SocialIcon";
 
 export function ChannelsStrip() {
   return (
@@ -22,18 +22,17 @@ export function ChannelsStrip() {
           </Link>
         </div>
         <ul className="grid grid-cols-2 gap-3">
-          {SOCIAL_LINKS.map((link, i) => {
-            const icon = platformOf(link.label);
+          {MAIN_CHANNELS.map((link, i) => {
             return (
-              <li key={link.label} data-reveal="" style={stagger(i, 90)}>
+              <li key={link.href} data-reveal="" style={stagger(i, 90)}>
                 <a
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="lift flex min-h-20 items-center gap-4 rounded-xl border border-line bg-bg px-5 font-semibold"
                 >
-                  {icon && <SocialIcon platform={icon} className="h-7 w-7 shrink-0" />}
-                  {link.label}
+                  <SocialIcon platform={link.platform} className="h-7 w-7 shrink-0" />
+                  {link.platform}
                   <span className="sr-only"> (abre em nova aba)</span>
                 </a>
               </li>

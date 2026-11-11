@@ -11,3 +11,13 @@ export function trackLead(source: string): void {
   window.fbq?.("track", "Lead", { content_name: source });
   window.gtag?.("event", "Lead", { event_label: source });
 }
+
+/**
+ * Evento de clique em CTA de venda que não é WhatsApp (checkout, link externo, "Quero ser parceiro").
+ * No Pixel vai como evento personalizado "CTA"; no GA, como "cta_click".
+ */
+export function trackCta(source: string): void {
+  if (typeof window === "undefined") return;
+  window.fbq?.("trackCustom", "CTA", { content_name: source });
+  window.gtag?.("event", "cta_click", { event_label: source });
+}

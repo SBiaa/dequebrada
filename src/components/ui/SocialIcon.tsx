@@ -1,11 +1,4 @@
-type Platform = "Instagram" | "TikTok" | "YouTube" | "Spotify";
-
-export function platformOf(label: string): Platform | null {
-  for (const p of ["Instagram", "TikTok", "YouTube", "Spotify"] as const) {
-    if (label.startsWith(p)) return p;
-  }
-  return null;
-}
+import type { Platform } from "@/data/channels";
 
 const COLORS: Record<Platform, string> = {
   Instagram: "text-[#ff5f9e]",

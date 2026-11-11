@@ -1,3 +1,5 @@
+import { MAIN_CHANNELS } from "@/data/channels";
+
 export const SITE = {
   name: "De Quebrada",
   cnpj: "59.814.997/0001-66",
@@ -27,16 +29,28 @@ export const WHATSAPP_MESSAGES = {
   proprioPodcast: `${base} lançar o meu próprio podcast no Estúdio de Quebrada`,
   formacao: `${base} entrar na formação Da Quebrada ao Digital`,
   anunciar: `${base} saber como anunciar no portal e no podcast`,
+  parceiro: `${base} ser parceiro ou patrocinador do De Quebrada`,
+  estudio: `${base} agendar uma gravação no Estúdio de Quebrada`,
 } as const;
 
+/** Menu principal (cabeçalho e rodapé). */
 export const NAV_LINKS = [
   { label: "Início", href: "/" },
-  { label: "News", href: "/news" },
-  { label: "Business", href: "/business" },
-  { label: "Podcast", href: "/podcast" },
   { label: "Da Quebrada ao Digital", href: "/da-quebrada-ao-digital" },
-  { label: "Presença Digital", href: "/presenca-digital" },
+  { label: "Estúdio", href: "/estudio" },
+  { label: "Publicidade", href: "/publicidade" },
+  // Até a fase 3 (blog com painel), o portal de notícias continua em /news.
+  { label: "Blog", href: "/news" },
+  { label: "Loja", href: "/loja" },
+  { label: "Parceiros", href: "/parceiros" },
   { label: "Sobre", href: "/sobre" },
+  { label: "Área de membros", href: "/membros" },
+] as const;
+
+/** Páginas que saíram do menu principal, mas continuam no ar (links já divulgados). */
+export const MORE_LINKS = [
+  { label: "De Quebrada Business", href: "/business" },
+  { label: "Presença Digital", href: "/presenca-digital" },
 ] as const;
 
 export const LEGAL_LINKS = [
@@ -46,9 +60,9 @@ export const LEGAL_LINKS = [
   { label: "Acessibilidade", href: "/acessibilidade" },
 ] as const;
 
-export const SOCIAL_LINKS = [
-  { label: "Instagram", href: "https://www.instagram.com/dequebradapodcast/" },
-  { label: "YouTube", href: "https://www.youtube.com/@DeQuebradapodcast" },
-  { label: "TikTok", href: "https://www.tiktok.com/@dequebradapodcast" },
-  { label: "Spotify", href: "https://open.spotify.com/show/6innHIAEayFKSHgL2xro0P" },
-] as const;
+/** Lista curta de redes. A lista completa fica em src/data/channels.ts. */
+export const SOCIAL_LINKS = MAIN_CHANNELS.map((c) => ({
+  label: c.platform,
+  href: c.href,
+  platform: c.platform,
+}));

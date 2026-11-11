@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LEGAL_LINKS, NAV_LINKS, SITE, SOCIAL_LINKS } from "@/lib/site";
+import { MAIN_CHANNELS } from "@/data/channels";
+import { LEGAL_LINKS, MORE_LINKS, NAV_LINKS, SITE } from "@/lib/site";
 import { Ph } from "@/components/ui/Marked";
 import { Year } from "@/components/ui/Year";
 import { Logo } from "./Logo";
@@ -24,7 +25,7 @@ export function Footer() {
         <nav aria-label="Páginas do site">
           <h2 className={heading}>Navegue</h2>
           <ul className="space-y-2">
-            {NAV_LINKS.map((l) => (
+            {[...NAV_LINKS, ...MORE_LINKS].map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className={link}>
                   {l.label}
@@ -47,15 +48,18 @@ export function Footer() {
           </ul>
           <h2 className={`${heading} mt-8`}>Redes</h2>
           <ul className="space-y-2">
-            {SOCIAL_LINKS.map((l) => (
-              <li key={l.label}>
+            {MAIN_CHANNELS.map((l) => (
+              <li key={l.href}>
                 <a href={l.href} target="_blank" rel="noopener noreferrer" className={link}>
-                  {l.label}
+                  {l.platform}
                   <span className="sr-only"> (abre em nova aba)</span>
                 </a>
               </li>
             ))}
           </ul>
+          <Link href="/sobre#onde-encontrar" className={`${link} mt-3 inline-block text-sm`}>
+            Todos os canais →
+          </Link>
         </div>
 
         <div>
