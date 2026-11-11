@@ -65,7 +65,8 @@ Mesma estrutura do site atual, com texto real e URLs sem acento.
 | `/estudio` | `/podcasts` | Estúdio + participação no podcast, galeria e FAQ. `/podcast` e `/podcasts` redirecionam para cá |
 | `/publicidade` | (cardápio de serviços) | Cardápio de publicidade e mídia kit resumido |
 | `/parceiros` | (não existia) | Patrocinadores e parceiros com links para as redes |
-| `/loja`, `/membros` | (não existiam) | "Em breve" até as fases 4 e 5 |
+| `/loja` | (não existia) | Vitrine com filtro por categoria. Compra pelo WhatsApp (mensagem com produto, variação e código) ou link externo |
+| `/membros` | (não existia) | "Em breve" até a fase 5 |
 | `/daquebradaaodigital` | `/daquebradaaodigital` | Mesma URL da divulgação. Página de vendas completa (pra quem é, módulos, como funciona, depoimentos, incluso, garantia, FAQ). `/da-quebrada-ao-digital` redireciona para cá |
 | `/presenca-digital` | `/presençadigital` (com cedilha) | URL sem acento, canais e números em texto |
 | `/sobre` | `/sobre` | História, equipe, valores, "Onde nos encontrar" (todos os canais), endereço com mapa e telefone |
@@ -98,6 +99,7 @@ Até a fase 3, "Blog" aponta para `/news`.
 - `src/data/studio.ts`: pacotes, preços, serviços avulsos, galeria e FAQ do estúdio.
 - `src/data/advertising.ts`: cardápio de publicidade e mídia kit.
 - `src/data/formacao.ts`: preço, módulos, pra quem é, depoimentos e FAQ da formação.
+- `src/data/products.ts`: produtos da loja (sku, preço em centavos, variações, foto, botão WhatsApp ou link externo, `available: false` para esconder).
 - `src/data/partners.ts`: parceiros e patrocinadores (logo em `/public/parceiros/`).
 - Notícias: pelo painel em `/painel`. `src/lib/news.ts` só tem os exemplos que a home mostra enquanto não houver post publicado.
 - `src/app/*/page.tsx`: cada página. `src/components/sections/`: seções da home.
@@ -122,6 +124,8 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | `[A CONFIRMAR]` | FAQ (prazos, segmentos, pagamento) e textos legais |
 | `[DEPOIMENTO REAL AQUI]`, `[NOME DO CLIENTE]`, `[NEGÓCIO / CASE]` | Provas na home (3 espaços) |
 | `[E-MAIL REAL AQUI]` | Rodapé e páginas legais |
+| `[PRODUTO EXEMPLO]`, `[DESCRIÇÃO DO PRODUTO...]`, `[DEFINIR PREÇO]`, `[FOTO DO PRODUTO]` | Loja: lista real, fotos, preços e se cada um vende por WhatsApp ou link externo (e qual link) |
+| `[COMO FUNCIONA A ENTREGA OU RETIRADA]` | Loja |
 | Conta do Carlos no painel | `npm run admin:create` com o e-mail dele |
 | Resend (conta + domínio verificado) | E-mail de "esqueci minha senha" |
 | Categorias e primeiros posts | Pelo painel |
