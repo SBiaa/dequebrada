@@ -2,12 +2,13 @@
 
 Versão melhorada do site dequebrada.com, feita como **exemplo** para o Carlos Junior. Não é o site real: todas as páginas têm `noindex, nofollow` e uma faixa "Proposta de layout · Ace Lab" no topo.
 
-Stack: Next.js (App Router) + TypeScript + Tailwind CSS. Sem bibliotecas extras.
+Stack: Next.js 16 (App Router) + TypeScript + Tailwind CSS. Blog e painel: Neon Postgres (Drizzle ORM), Vercel Blob (imagens), senhas com argon2id, e-mail pelo Resend.
 
 ## Como rodar
 
 ```bash
 npm install
+npx vercel env pull .env.local   # baixa DATABASE_URL, BLOB_READ_WRITE_TOKEN etc.
 npm run dev      # http://localhost:3000
 npm run build    # build de produção
 npm run lint
@@ -22,6 +23,36 @@ npm run lint
 
 Pelo terminal: `npx vercel` (preview) e `npx vercel --prod`.
 
+## Blog e painel do Carlos
+
+- Público: `/blog` (busca e paginação), `/blog/[slug]`, `/blog/categoria/[categoria]`, `/feed.xml` (RSS) e `/sitemap.xml`. `/news` redireciona para `/blog`.
+- Painel: `/painel` (protegido). Escrever, publicar, tirar do ar e excluir posts; criar e renomear categorias; enviar imagem de capa (JPG/PNG/WEBP até 4 MB, com texto alternativo obrigatório).
+- O texto do post é em Markdown simples (dicas aparecem no formulário). O HTML é limpo no servidor: script, iframe e atributos perigosos são removidos.
+- Páginas do blog ficam em cache e são atualizadas na hora em que o Carlos salva no painel (e a cada 5 min).
+- Cada post gera title e description próprios, Open Graph, JSON-LD `NewsArticle` e tempo de leitura.
+
+### Contas e segurança
+
+- Login: `/entrar`. Esqueci a senha: `/esqueci-senha` (link por e-mail, vale 1 hora, uso único). Ao trocar a senha, todas as sessões são encerradas.
+- Senhas guardadas só como hash argon2id. Sessão em cookie httpOnly; o banco guarda só o hash do token.
+- Bloqueio após 5 erros por e-mail ou 20 por IP em 15 minutos. A mensagem de erro não revela se o e-mail existe.
+- `/painel` é protegido em três camadas: proxy (sem cookie → login), layout e cada Server Action checam sessão válida e papel `admin`.
+
+### Primeiro acesso (criar a conta do Carlos)
+
+```bash
+npm run admin:create      # pergunta e-mail, nome e senha
+```
+
+### Banco de dados
+
+```bash
+npm run db:generate   # gera migração depois de mudar src/db/schema.ts
+npm run db:migrate    # aplica no banco do DATABASE_URL_UNPOOLED
+```
+
+A migração inicial já foi aplicada no banco Neon `dequebrada-db` (projeto Vercel `dequebrada-proposta`).
+
 ## Páginas
 
 Mesma estrutura do site atual, com texto real e URLs sem acento.
@@ -29,7 +60,7 @@ Mesma estrutura do site atual, com texto real e URLs sem acento.
 | Rota | Site atual | O que mudou |
 |---|---|---|
 | `/` | Só um carrossel de notícias | Home com notícias, produtos, Carlos, canais, provas, FAQ e CTA |
-| `/news` | `/blog` | Filtro por cidade, cards com cidade e tempo de leitura |
+| `/blog` | `/blog` | Blog com painel próprio, categorias, busca, paginação, RSS e sitemap. `/news` redireciona |
 | `/business` | `/dequebradabusiness` | Página era um iframe sem texto indexável; agora é texto real |
 | `/estudio` | `/podcasts` | Estúdio + participação no podcast, galeria e FAQ. `/podcast` e `/podcasts` redirecionam para cá |
 | `/publicidade` | (cardápio de serviços) | Cardápio de publicidade e mídia kit resumido |
@@ -49,6 +80,10 @@ O mapa do Google em `/sobre` só carrega quando a pessoa clica em "Mostrar mapa"
 |---|---|
 | `NEXT_PUBLIC_META_PIXEL_ID` | Pixel da Meta |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics (ex.: `G-XXXXXXXXXX`) |
+| `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Neon Postgres (criado pela integração; já configurado na Vercel) |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob para as capas (já configurado na Vercel) |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Envio do e-mail de nova senha. **Falta configurar** |
+| `SITE_URL` | Domínio final (links de e-mail, sitemap, RSS, Open Graph) |
 | `CHECKOUT_URL_DA_QUEBRADA_AO_DIGITAL` | Link de checkout da formação (https). Sem ele, os botões de compra vão para o WhatsApp. Após mudar na Vercel, faça um novo deploy |
 
 ## Menu
@@ -64,7 +99,7 @@ Até a fase 3, "Blog" aponta para `/news`.
 - `src/data/advertising.ts`: cardápio de publicidade e mídia kit.
 - `src/data/formacao.ts`: preço, módulos, pra quem é, depoimentos e FAQ da formação.
 - `src/data/partners.ts`: parceiros e patrocinadores (logo em `/public/parceiros/`).
-- `src/lib/news.ts`: notícias de exemplo (no site final vêm do blog/CMS).
+- Notícias: pelo painel em `/painel`. `src/lib/news.ts` só tem os exemplos que a home mostra enquanto não houver post publicado.
 - `src/app/*/page.tsx`: cada página. `src/components/sections/`: seções da home.
 
 ## Conteúdo real aproveitado do site atual
@@ -87,6 +122,9 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | `[A CONFIRMAR]` | FAQ (prazos, segmentos, pagamento) e textos legais |
 | `[DEPOIMENTO REAL AQUI]`, `[NOME DO CLIENTE]`, `[NEGÓCIO / CASE]` | Provas na home (3 espaços) |
 | `[E-MAIL REAL AQUI]` | Rodapé e páginas legais |
+| Conta do Carlos no painel | `npm run admin:create` com o e-mail dele |
+| Resend (conta + domínio verificado) | E-mail de "esqueci minha senha" |
+| Categorias e primeiros posts | Pelo painel |
 | Link de checkout | Variável `CHECKOUT_URL_DA_QUEBRADA_AO_DIGITAL` (formação) |
 | `[DEPOIMENTO REAL DE ALUNO]`, `[NOME DO ALUNO]`, `[NEGÓCIO / CIDADE]` | Formação: 3 depoimentos |
 | `[PARCELAMENTO A CONFIRMAR]`, `[A CONFIRMAR]` | Formação: parcelamento, formas de pagamento, plataforma das aulas, canal de suporte |
@@ -106,7 +144,8 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | `[FOTO DO ESTÚDIO ...]` | Estúdio: 4 fotos da galeria |
 
 Observações:
-- As notícias da home e de `/news` são exemplos reais do portal atual e abrem a notícia no site atual. Para o site final, o portal precisa de um CMS ou blog próprio.
+- Enquanto não houver post publicado no painel, a home mostra 3 exemplos reais do portal atual (abrem no site atual).
+- Migrar as notícias do portal atual para o blog novo: [DECIDIR] (manual pelo painel ou importação).
 - O logo é só texto estilizado. Trocar pelo logo oficial (microfone com corrente).
 - Instagram do Rancho, do Estúdio e do Empreendedor, e o TikTok do Empreendedor, usam o padrão de URL dos @ informados no site atual. Conferir.
 

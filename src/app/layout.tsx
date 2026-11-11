@@ -20,6 +20,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  // Base para URLs absolutas de Open Graph. SITE_URL é o domínio final (ex.: https://dequebrada.com).
+  metadataBase: new URL(
+    process.env.SITE_URL ??
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "http://localhost:3000"),
+  ),
+  alternates: { types: { "application/rss+xml": "/feed.xml" } },
   title: {
     default: "De Quebrada | Presença Digital em Ferraz de Vasconcelos",
     template: "%s | De Quebrada",

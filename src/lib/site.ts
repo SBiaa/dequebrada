@@ -39,8 +39,7 @@ export const NAV_LINKS = [
   { label: "Da Quebrada ao Digital", href: "/daquebradaaodigital" },
   { label: "Estúdio", href: "/estudio" },
   { label: "Publicidade", href: "/publicidade" },
-  // Até a fase 3 (blog com painel), o portal de notícias continua em /news.
-  { label: "Blog", href: "/news" },
+  { label: "Blog", href: "/blog" },
   { label: "Loja", href: "/loja" },
   { label: "Parceiros", href: "/parceiros" },
   { label: "Sobre", href: "/sobre" },

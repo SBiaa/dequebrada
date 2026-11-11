@@ -16,7 +16,7 @@ export function HomeHero() {
       lead="Podcast nº 1 do Alto Tietê, portal de notícias, estúdio profissional e espaço de eventos. Tudo construído do zero em Ferraz de Vasconcelos, por quem saiu da quebrada."
       actions={
         <>
-          <Link href="/news" className="btn btn-primary">
+          <Link href="/blog" className="btn btn-primary">
             Ler as notícias
           </Link>
           <WhatsAppButton message={WHATSAPP_MESSAGES.geral} source="hero">

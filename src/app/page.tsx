@@ -11,6 +11,9 @@ import { Proof } from "@/components/sections/Proof";
 import { RaioX } from "@/components/sections/RaioX";
 import { BRAND_STATS, Stats } from "@/components/ui/Stats";
 
+/** Atualiza as últimas notícias da home a cada 5 minutos. */
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: {
     absolute: "Podcast, Notícias e Consultoria em Ferraz de Vasconcelos | De Quebrada",
