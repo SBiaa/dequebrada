@@ -31,6 +31,14 @@ Pelo terminal: `npx vercel` (preview) e `npx vercel --prod`.
 - Páginas do blog ficam em cache e são atualizadas na hora em que o Carlos salva no painel (e a cada 5 min).
 - Cada post gera title e description próprios, Open Graph, JSON-LD `NewsArticle` e tempo de leitura.
 
+### Mapa "Notícias da região" (topo do /blog)
+
+- Mapa plano em SVG com o **contorno real** dos municípios (malhas do IBGE, API v3), gerado uma vez e versionado em `src/data/mapa-regiao.ts`. O site não chama o IBGE.
+- Cidades clicáveis: Ferraz de Vasconcelos (padrão), Poá, Suzano, Itaquaquecetuba, Mogi das Cruzes e São Paulo. Guarulhos (3518800) e Arujá (3503901) aparecem apagadas, só como referência.
+- Recorte: longitude -46,47 a -46,15 e latitude -23,40 a -23,66. São Paulo aparece só na faixa da Zona Leste; Mogi e o sul de Suzano são cortados. A borda esmaecida indica que continuam.
+- Cada cidade mostra a contagem de notícias (da categoria com o mesmo slug). Cidades com notícia nas últimas 24 h pulsam (sem pulso com "reduzir movimento").
+- Para incluir uma cidade: adicione em `src/data/regiao.ts` (com o código IBGE), rode `npm run mapa:gerar` e `npm run seed:categorias`.
+
 ### Contas e segurança
 
 - Login: `/entrar`. Esqueci a senha: `/esqueci-senha` (link por e-mail, vale 1 hora, uso único). Ao trocar a senha, todas as sessões são encerradas.
@@ -164,7 +172,7 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | Primeiros conteúdos exclusivos | Pelo painel |
 | Conta do Carlos no painel | `npm run admin:create` com o e-mail dele |
 | Resend (conta + domínio verificado) | E-mail de "esqueci minha senha" |
-| Categorias e primeiros posts | Pelo painel |
+| Primeiros posts (marque a categoria da cidade para aparecer no mapa) | Pelo painel. As 6 categorias de cidade já foram criadas |
 | Link de checkout | Variável `CHECKOUT_URL_DA_QUEBRADA_AO_DIGITAL` (formação) |
 | `[DEPOIMENTO REAL DE ALUNO]`, `[NOME DO ALUNO]`, `[NEGÓCIO / CIDADE]` | Formação: 3 depoimentos |
 | `[PARCELAMENTO A CONFIRMAR]`, `[A CONFIRMAR]` | Formação: parcelamento, formas de pagamento, plataforma das aulas, canal de suporte |

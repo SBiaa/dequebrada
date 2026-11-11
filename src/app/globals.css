@@ -274,3 +274,137 @@ body {
   padding: 0.1em 0.35em;
   font-size: 0.9em;
 }
+
+/* ---------- Mapa da região (/blog) ---------- */
+.region-map .rm-context {
+  fill: #0b1422;
+  stroke: rgb(159 176 199 / 0.18);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.region-map .rm-hit {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 34; /* amplia a área de toque das cidades pequenas */
+  stroke-linejoin: round;
+  pointer-events: all;
+  cursor: pointer;
+}
+.region-map .rm-city {
+  fill: #10203a;
+  stroke: rgb(77 184 234 / 0.32);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition:
+    fill 0.2s ease,
+    stroke 0.2s ease;
+  outline: none;
+}
+.region-map .rm-city[data-empty] {
+  fill: #0c1729;
+  stroke: rgb(77 184 234 / 0.18);
+}
+.region-map .rm-city:hover {
+  fill: #183457;
+  stroke: rgb(77 184 234 / 0.8);
+}
+.region-map .rm-city:focus-visible {
+  stroke: #ffffff;
+  stroke-width: 6;
+}
+.region-map .rm-city[aria-pressed="true"] {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.region-map .rm-glow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 10;
+  opacity: 0.75;
+  pointer-events: none;
+}
+.region-map .rm-selected-edge {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.85);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.region-map .rm-badge {
+  cursor: pointer;
+}
+.region-map .rm-badge circle {
+  fill: #05080f;
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.region-map .rm-badge[data-empty] circle {
+  stroke: rgb(159 176 199 / 0.45);
+}
+.region-map .rm-badge[data-active] circle {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+.region-map .rm-badge text {
+  fill: var(--ink);
+  font-size: 30px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+.region-map .rm-badge[data-empty] text {
+  fill: var(--muted);
+}
+.region-map .rm-badge[data-active] text {
+  fill: var(--accent-ink);
+}
+.region-map .rm-badge .rm-pulse {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: rm-pulse 2s ease-out infinite;
+}
+@keyframes rm-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+.region-map .rm-label {
+  pointer-events: none;
+}
+.region-map .rm-label rect {
+  fill: #05080f;
+  stroke: rgb(77 184 234 / 0.6);
+  stroke-width: 2;
+}
+.region-map .rm-label[data-active] rect {
+  fill: var(--accent);
+  stroke: #ffffff;
+}
+.region-map .rm-label text {
+  fill: var(--ink);
+  font-size: 38px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+.region-map .rm-label[data-active] text {
+  fill: var(--accent-ink);
+}
+.region-map .rm-edge-tag {
+  fill: var(--muted);
+  font-size: 30px;
+  font-weight: 600;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .region-map .rm-pulse {
+    display: none;
+  }
+}

@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { marked } from "marked";
 import sanitizeHtml from "sanitize-html";
 import { db, schema } from "@/db";
@@ -143,6 +143,51 @@ export async function relatedPosts(postId: string, categoryId: number | null, li
 
 export async function allCategories() {
   return db.select().from(categories).orderBy(categories.name);
+}
+
+export type CityStats = {
+  count: number;
+  /** Data da notícia mais recente (ISO). */
+  latestAt: string | null;
+  /** Notícia publicada nas últimas 24 horas. */
+  recent: boolean;
+  latest: { title: string; slug: string; coverUrl: string | null; coverAlt: string | null } | null;
+};
+
+/** Para cada slug de categoria: total de notícias publicadas e a manchete mais recente. */
+export async function statsByCategory(slugs: string[]): Promise<Record<string, CityStats>> {
+  const out: Record<string, CityStats> = Object.fromEntries(
+    slugs.map((s) => [s, { count: 0, latestAt: null, recent: false, latest: null }]),
+  );
+  if (slugs.length === 0) return out;
+  const [counts, latest] = await Promise.all([
+    db
+      .select({ slug: categories.slug, total: count() })
+      .from(posts)
+      .innerJoin(categories, eq(posts.categoryId, categories.id))
+      .where(and(published, inArray(categories.slug, slugs)))
+      .groupBy(categories.slug),
+    db
+      .selectDistinctOn([categories.slug], {
+        catSlug: categories.slug,
+        title: posts.title,
+        slug: posts.slug,
+        coverUrl: posts.coverUrl,
+        coverAlt: posts.coverAlt,
+        publishedAt: posts.publishedAt,
+      })
+      .from(posts)
+      .innerJoin(categories, eq(posts.categoryId, categories.id))
+      .where(and(published, inArray(categories.slug, slugs)))
+      .orderBy(categories.slug, desc(posts.publishedAt)),
+  ]);
+  for (const c of counts) out[c.slug].count = c.total;
+  for (const l of latest) {
+    out[l.catSlug].latestAt = l.publishedAt?.toISOString() ?? null;
+    out[l.catSlug].recent = !!l.publishedAt && Date.now() - l.publishedAt.getTime() < 24 * 3600 * 1000;
+    out[l.catSlug].latest = { title: l.title, slug: l.slug, coverUrl: l.coverUrl, coverAlt: l.coverAlt };
+  }
+  return out;
 }
 
 export async function getCategory(slug: string) {
