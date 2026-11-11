@@ -1,3 +1,4 @@
+import { Marked } from "./Marked";
 import { stagger } from "@/lib/motion";
 import { IconTile, type IconName } from "./Icon";
 
@@ -29,7 +30,7 @@ export function CardGrid({ items, marker = "none", columns = "3" }: Props) {
           )}
           {item.tag && <p className="eyebrow">{item.tag}</p>}
           <h3 className="text-lg font-bold leading-snug tracking-tight">{item.title}</h3>
-          <p className="text-muted">{item.text}</p>
+          <p className="text-muted"><Marked>{item.text}</Marked></p>
           </div>
         </li>
       ))}

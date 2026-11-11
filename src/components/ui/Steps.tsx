@@ -1,3 +1,4 @@
+import { Marked } from "./Marked";
 import { stagger } from "@/lib/motion";
 import { IconTile, type IconName } from "./Icon";
 
@@ -22,7 +23,7 @@ export function Steps({ items }: { items: StepItem[] }) {
             </span>
           </div>
           <h3 className="mt-4 text-lg font-bold leading-snug tracking-tight">{step.title}</h3>
-          <p className="mt-2 text-muted">{step.text}</p>
+          <p className="mt-2 text-muted"><Marked>{step.text}</Marked></p>
         </li>
       ))}
     </ol>

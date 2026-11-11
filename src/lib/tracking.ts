@@ -21,3 +21,10 @@ export function trackCta(source: string): void {
   window.fbq?.("trackCustom", "CTA", { content_name: source });
   window.gtag?.("event", "cta_click", { event_label: source });
 }
+
+/** Clique no botão de compra que leva ao checkout externo. */
+export function trackCheckout(source: string): void {
+  if (typeof window === "undefined") return;
+  window.fbq?.("track", "InitiateCheckout", { content_name: source });
+  window.gtag?.("event", "begin_checkout", { event_label: source });
+}

@@ -25,7 +25,7 @@ const PRODUCTS: { name: string; tag: string; text: string; href: string; cta: st
     name: "Da Quebrada ao Digital",
     tag: "Formação",
     text: "Aprenda a criar conteúdo e vender online, pelo celular. A partir de R$ 47.",
-    href: "/da-quebrada-ao-digital",
+    href: "/daquebradaaodigital",
     cta: "Ver a formação",
   },
 ];

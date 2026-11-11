@@ -36,7 +36,7 @@ export const WHATSAPP_MESSAGES = {
 /** Menu principal (cabeçalho e rodapé). */
 export const NAV_LINKS = [
   { label: "Início", href: "/" },
-  { label: "Da Quebrada ao Digital", href: "/da-quebrada-ao-digital" },
+  { label: "Da Quebrada ao Digital", href: "/daquebradaaodigital" },
   { label: "Estúdio", href: "/estudio" },
   { label: "Publicidade", href: "/publicidade" },
   // Até a fase 3 (blog com painel), o portal de notícias continua em /news.

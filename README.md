@@ -35,25 +35,26 @@ Mesma estrutura do site atual, com texto real e URLs sem acento.
 | `/publicidade` | (cardápio de serviços) | Cardápio de publicidade e mídia kit resumido |
 | `/parceiros` | (não existia) | Patrocinadores e parceiros com links para as redes |
 | `/loja`, `/membros` | (não existiam) | "Em breve" até as fases 4 e 5 |
-| `/da-quebrada-ao-digital` | `/daquebradaaodigital` | Idem |
+| `/daquebradaaodigital` | `/daquebradaaodigital` | Mesma URL da divulgação. Página de vendas completa (pra quem é, módulos, como funciona, depoimentos, incluso, garantia, FAQ). `/da-quebrada-ao-digital` redireciona para cá |
 | `/presenca-digital` | `/presençadigital` (com cedilha) | URL sem acento, canais e números em texto |
 | `/sobre` | `/sobre` | História, equipe, valores, "Onde nos encontrar" (todos os canais), endereço com mapa e telefone |
 | 4 páginas legais | Links levavam à home | Páginas reais (texto-base a validar com jurídico) |
 
 ## Pixel da Meta e Google Analytics
 
-Só carregam se as variáveis existirem. Todo clique em botão de WhatsApp dispara o evento `Lead`. Outros CTAs de venda (ex.: "Quero ser parceiro") disparam `CTA` no Pixel e `cta_click` no GA.
+Só carregam se as variáveis existirem. Todo clique em botão de WhatsApp dispara o evento `Lead`. Outros CTAs de venda (ex.: "Quero ser parceiro") disparam `CTA` no Pixel e `cta_click` no GA. O botão de checkout dispara `InitiateCheckout` no Pixel e `begin_checkout` no GA.
 O mapa do Google em `/sobre` só carrega quando a pessoa clica em "Mostrar mapa".
 
 | Variável | Para quê |
 |---|---|
 | `NEXT_PUBLIC_META_PIXEL_ID` | Pixel da Meta |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics (ex.: `G-XXXXXXXXXX`) |
+| `CHECKOUT_URL_DA_QUEBRADA_AO_DIGITAL` | Link de checkout da formação (https). Sem ele, os botões de compra vão para o WhatsApp. Após mudar na Vercel, faça um novo deploy |
 
 ## Menu
 
 Início, Da Quebrada ao Digital, Estúdio, Publicidade, Blog, Loja, Parceiros, Sobre, Área de membros. Business e Presença Digital saíram do menu, mas continuam no ar, com link no rodapé.
-Até a fase 3, "Blog" aponta para `/news`. Até a fase 2, a formação continua em `/da-quebrada-ao-digital`.
+Até a fase 3, "Blog" aponta para `/news`.
 
 ## Onde editar (sem mexer em componente)
 
@@ -61,6 +62,7 @@ Até a fase 3, "Blog" aponta para `/news`. Até a fase 2, a formação continua 
 - `src/data/channels.ts`: **todas as redes e canais** (usado no rodapé, home, Sobre e Presença Digital).
 - `src/data/studio.ts`: pacotes, preços, serviços avulsos, galeria e FAQ do estúdio.
 - `src/data/advertising.ts`: cardápio de publicidade e mídia kit.
+- `src/data/formacao.ts`: preço, módulos, pra quem é, depoimentos e FAQ da formação.
 - `src/data/partners.ts`: parceiros e patrocinadores (logo em `/public/parceiros/`).
 - `src/lib/news.ts`: notícias de exemplo (no site final vêm do blog/CMS).
 - `src/app/*/page.tsx`: cada página. `src/components/sections/`: seções da home.
@@ -85,7 +87,9 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | `[A CONFIRMAR]` | FAQ (prazos, segmentos, pagamento) e textos legais |
 | `[DEPOIMENTO REAL AQUI]`, `[NOME DO CLIENTE]`, `[NEGÓCIO / CASE]` | Provas na home (3 espaços) |
 | `[E-MAIL REAL AQUI]` | Rodapé e páginas legais |
-| `[LINK DE CHECKOUT]` | Botão da formação Da Quebrada ao Digital |
+| Link de checkout | Variável `CHECKOUT_URL_DA_QUEBRADA_AO_DIGITAL` (formação) |
+| `[DEPOIMENTO REAL DE ALUNO]`, `[NOME DO ALUNO]`, `[NEGÓCIO / CIDADE]` | Formação: 3 depoimentos |
+| `[PARCELAMENTO A CONFIRMAR]`, `[A CONFIRMAR]` | Formação: parcelamento, formas de pagamento, plataforma das aulas, canal de suporte |
 | `[CONFERIR NÚMEROS]` | Seguidores e views por canal em Presença Digital |
 | `[LISTA DE PRÊMIOS E REALIZAÇÕES]` | Página Sobre (hoje só em imagem no site atual) |
 | `[FOTO ... AQUI]` | Fotos do Carlos e do estúdio |
