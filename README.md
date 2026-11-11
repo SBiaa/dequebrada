@@ -64,7 +64,9 @@ A migração inicial já foi aplicada no banco Neon `dequebrada-db` (projeto Ver
 
 **Cobrança ainda não implementada.** Hoje: a pessoa cria a conta → paga por fora (WhatsApp) → o Carlos clica em "Liberar acesso".
 
-### Cobrança recorrente: opções para decidir com o cliente
+### Cobrança recorrente
+
+**Decisão (nov/2026): sem plataforma de cobrança por enquanto.** O acesso de assinante é liberado manualmente no painel. A tabela abaixo fica como referência para quando o cliente quiser automatizar.
 
 Taxas aproximadas; conferir no site de cada um antes de fechar.
 
@@ -158,7 +160,6 @@ Tudo que aparece em **[COLCHETES]** amarelos no site. Busque por `[` no código.
 | `[PRODUTO EXEMPLO]`, `[DESCRIÇÃO DO PRODUTO...]`, `[DEFINIR PREÇO]`, `[FOTO DO PRODUTO]` | Loja: lista real, fotos, preços e se cada um vende por WhatsApp ou link externo (e qual link) |
 | `[COMO FUNCIONA A ENTREGA OU RETIRADA]` | Loja |
 | Valor da assinatura `[DEFINIR]` e forma de pagamento | Área de membros |
-| Escolha da plataforma de cobrança | Ver tabela "Cobrança recorrente" |
 | `[PLATAFORMA DE PAGAMENTO, QUANDO HOUVER]` | Política de Privacidade |
 | Primeiros conteúdos exclusivos | Pelo painel |
 | Conta do Carlos no painel | `npm run admin:create` com o e-mail dele |
