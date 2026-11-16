@@ -15,15 +15,17 @@ export type RegionCityConfig = {
   /** Igual ao id: sem acento, minúsculo, com hífen. */
   slug: string;
   ibge: number;
+  /** Nome curto para as abas do desktop. */
+  short: string;
 };
 
 export const CITIES: RegionCityConfig[] = [
-  { id: "ferraz-de-vasconcelos", name: "Ferraz de Vasconcelos", slug: "ferraz-de-vasconcelos", ibge: 3515707 },
-  { id: "poa", name: "Poá", slug: "poa", ibge: 3539806 },
-  { id: "suzano", name: "Suzano", slug: "suzano", ibge: 3552502 },
-  { id: "itaquaquecetuba", name: "Itaquaquecetuba", slug: "itaquaquecetuba", ibge: 3523107 },
-  { id: "mogi-das-cruzes", name: "Mogi das Cruzes", slug: "mogi-das-cruzes", ibge: 3530607 },
-  { id: "sao-paulo", name: "São Paulo", slug: "sao-paulo", ibge: 3550308 },
+  { id: "ferraz-de-vasconcelos", name: "Ferraz de Vasconcelos", slug: "ferraz-de-vasconcelos", ibge: 3515707, short: "Ferraz" },
+  { id: "poa", name: "Poá", slug: "poa", ibge: 3539806, short: "Poá" },
+  { id: "suzano", name: "Suzano", slug: "suzano", ibge: 3552502, short: "Suzano" },
+  { id: "itaquaquecetuba", name: "Itaquaquecetuba", slug: "itaquaquecetuba", ibge: 3523107, short: "Itaquá" },
+  { id: "mogi-das-cruzes", name: "Mogi das Cruzes", slug: "mogi-das-cruzes", ibge: 3530607, short: "Mogi" },
+  { id: "sao-paulo", name: "São Paulo", slug: "sao-paulo", ibge: 3550308, short: "São Paulo" },
 ];
 
 export const CONTEXT_CITIES: { id: string; name: string; ibge: number }[] = [

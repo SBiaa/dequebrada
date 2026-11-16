@@ -408,3 +408,117 @@ body {
     display: none;
   }
 }
+
+/* Rolagem horizontal sem barra nativa (chips) */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Divisas desenhadas à parte: só no desktop (no mobile a borda é do próprio path) */
+.region-map .rm-line,
+.region-map .rm-context-line {
+  display: none;
+}
+
+/* ---------- Mapa da região: desktop (>= 1024px) ---------- */
+@media (min-width: 1024px) {
+  /* Sem moldura: o mapa se mistura com o fundo da seção. */
+  .region-map .rm-frame {
+    overflow: hidden;
+  }
+  /* Vinheta: esmaece as quatro bordas do mapa (sem corte reto). */
+  .region-map .rm-frame svg {
+    -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%);
+    mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%);
+  }
+  .region-map .rm-context {
+    fill: #0a1220;
+    stroke: none;
+  }
+  .region-map .rm-context-line {
+    display: inline;
+    fill: none;
+    stroke: rgb(159 176 199 / 0.22);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 6;
+  }
+  .region-map .rm-city,
+  .region-map .rm-city[data-empty] {
+    stroke: none;
+  }
+  .region-map .rm-city {
+    fill: #12233d;
+  }
+  .region-map .rm-city[data-empty] {
+    fill: #0d1a2e;
+  }
+  .region-map .rm-city[data-hover],
+  .region-map .rm-city:focus-visible {
+    fill: #1d3a60;
+  }
+  .region-map .rm-city:focus-visible {
+    stroke: #ffffff;
+    stroke-width: 5;
+  }
+  .region-map .rm-city[aria-pressed="true"] {
+    fill: rgb(77 184 234 / 0.25);
+    stroke: none;
+  }
+  .region-map .rm-line {
+    display: inline;
+    fill: none;
+    stroke: rgb(159 176 199 / 0.55);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+  .region-map .rm-line[data-hover] {
+    stroke: rgb(255 255 255 / 0.85);
+    stroke-width: 3;
+  }
+  .region-map .rm-glow {
+    stroke-width: 12;
+    opacity: 0.55;
+  }
+  .region-map .rm-selected-edge {
+    stroke: var(--accent);
+    stroke-width: 4;
+  }
+  .region-map .rm-badge[data-empty],
+  .region-map .rm-edge-tag {
+    display: none; /* no desktop todas as cidades já têm nome */
+  }
+  .region-map .rm-dlabel {
+    pointer-events: none;
+  }
+  .region-map .rm-dlabel text {
+    font-size: 24px;
+    font-weight: 600;
+    text-anchor: middle;
+    fill: rgb(244 247 251 / 0.88);
+    paint-order: stroke;
+    stroke: #060a13;
+    stroke-width: 6px;
+    stroke-linejoin: round;
+  }
+  .region-map .rm-dlabel[data-kind="empty"] text {
+    fill: rgb(159 176 199 / 0.85);
+  }
+  .region-map .rm-dlabel[data-kind="context"] text {
+    font-size: 20px;
+    font-weight: 500;
+    fill: rgb(159 176 199 / 0.5);
+  }
+  .region-map .rm-dlabel[data-kind="selected"] rect {
+    fill: var(--accent);
+  }
+  .region-map .rm-dlabel[data-kind="selected"] text {
+    font-size: 28px;
+    font-weight: 700;
+    fill: var(--accent-ink);
+    stroke: none;
+  }
+}

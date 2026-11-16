@@ -151,13 +151,23 @@ export type CityStats = {
   latestAt: string | null;
   /** Notícia publicada nas últimas 24 horas. */
   recent: boolean;
-  latest: { title: string; slug: string; coverUrl: string | null; coverAlt: string | null } | null;
+  latest: CityPost | null;
+  /** Até 3 notícias mais recentes da cidade. */
+  top: CityPost[];
+};
+
+export type CityPost = {
+  title: string;
+  slug: string;
+  coverUrl: string | null;
+  coverAlt: string | null;
+  publishedAt: string | null;
 };
 
 /** Para cada slug de categoria: total de notícias publicadas e a manchete mais recente. */
 export async function statsByCategory(slugs: string[]): Promise<Record<string, CityStats>> {
   const out: Record<string, CityStats> = Object.fromEntries(
-    slugs.map((s) => [s, { count: 0, latestAt: null, recent: false, latest: null }]),
+    slugs.map((s) => [s, { count: 0, latestAt: null, recent: false, latest: null, top: [] }]),
   );
   if (slugs.length === 0) return out;
   const [counts, latest] = await Promise.all([
@@ -167,8 +177,9 @@ export async function statsByCategory(slugs: string[]): Promise<Record<string, C
       .innerJoin(categories, eq(posts.categoryId, categories.id))
       .where(and(published, inArray(categories.slug, slugs)))
       .groupBy(categories.slug),
+    // As mais recentes por cidade; o corte em 3 por cidade é feito abaixo.
     db
-      .selectDistinctOn([categories.slug], {
+      .select({
         catSlug: categories.slug,
         title: posts.title,
         slug: posts.slug,
@@ -179,13 +190,26 @@ export async function statsByCategory(slugs: string[]): Promise<Record<string, C
       .from(posts)
       .innerJoin(categories, eq(posts.categoryId, categories.id))
       .where(and(published, inArray(categories.slug, slugs)))
-      .orderBy(categories.slug, desc(posts.publishedAt)),
+      .orderBy(categories.slug, desc(posts.publishedAt))
+      .limit(slugs.length * 40),
   ]);
   for (const c of counts) out[c.slug].count = c.total;
   for (const l of latest) {
-    out[l.catSlug].latestAt = l.publishedAt?.toISOString() ?? null;
-    out[l.catSlug].recent = !!l.publishedAt && Date.now() - l.publishedAt.getTime() < 24 * 3600 * 1000;
-    out[l.catSlug].latest = { title: l.title, slug: l.slug, coverUrl: l.coverUrl, coverAlt: l.coverAlt };
+    const city = out[l.catSlug];
+    if (city.top.length >= 3) continue;
+    const post: CityPost = {
+      title: l.title,
+      slug: l.slug,
+      coverUrl: l.coverUrl,
+      coverAlt: l.coverAlt,
+      publishedAt: l.publishedAt?.toISOString() ?? null,
+    };
+    city.top.push(post);
+    if (city.top.length === 1) {
+      city.latest = post;
+      city.latestAt = post.publishedAt;
+      city.recent = !!l.publishedAt && Date.now() - l.publishedAt.getTime() < 24 * 3600 * 1000;
+    }
   }
   return out;
 }

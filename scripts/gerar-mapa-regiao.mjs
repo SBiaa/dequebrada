@@ -133,6 +133,49 @@ function anchor(rings) {
 
 const r1 = (n) => Math.round(n * 10) / 10;
 
+/** Ponto em cima de uma borda do quadro (lado do recorte). */
+function onFrame(p) {
+  const e = 0.5;
+  return p[0] <= e ? "w" : p[0] >= WIDTH - e ? "e" : p[1] <= e ? "n" : p[1] >= HEIGHT - e ? "s" : null;
+}
+
+/**
+ * Divisa "de verdade": o contorno sem os trechos que só existem por causa do recorte.
+ * É ela que recebe borda e brilho, para não aparecer linha reta na beira do mapa.
+ */
+function outlineOf(rings) {
+  let d = "";
+  for (const ring of rings) {
+    const n = ring.length;
+    // começa num vértice cujo segmento anterior seja real, para não partir a linha no meio
+    let start = 0;
+    for (let i = 0; i < n; i++) {
+      const a = ring[(i + n - 1) % n];
+      const b = ring[i];
+      const fa = onFrame(a);
+      if (!(fa && fa === onFrame(b))) {
+        start = i;
+        break;
+      }
+    }
+    let pen = false;
+    for (let k = 0; k <= n; k++) {
+      const a = ring[(start + k - 1 + n) % n];
+      const b = ring[(start + k) % n];
+      const fa = onFrame(a);
+      const artificial = fa && fa === onFrame(b);
+      if (k === 0 || artificial) {
+        pen = false;
+        continue;
+      }
+      if (!pen) d += `M${r1(a[0])} ${r1(a[1])}`;
+      d += `L${r1(b[0])} ${r1(b[1])}`;
+      pen = true;
+    }
+  }
+  return d;
+}
+
 async function shape(code) {
   const url = `https://servicodados.ibge.gov.br/api/v3/malhas/municipios/${code}?formato=application/vnd.geo+json&qualidade=maxima`;
   const res = await fetch(url);
@@ -153,7 +196,7 @@ async function shape(code) {
     }
   }
   const d = rings.map((ring) => "M" + ring.map((p) => `${r1(p[0])} ${r1(p[1])}`).join("L") + "Z").join("");
-  return { d, clipped, ...anchor(rings) };
+  return { d, outline: outlineOf(rings), clipped, ...anchor(rings) };
 }
 
 const out = { cities: {}, context: {} };
@@ -167,6 +210,8 @@ const file = `// ARQUIVO GERADO por scripts/gerar-mapa-regiao.mjs a partir das m
 export type MapShape = {
   /** Path SVG no viewBox do mapa. */
   d: string;
+  /** Só a divisa real (sem os trechos criados pelo recorte): recebe borda e brilho. */
+  outline: string;
   /** true se o município foi cortado pelo quadro (aparece com borda esmaecida). */
   clipped: boolean;
   /** Ponto interno mais distante das bordas: onde ficam rótulo e contagem. */
