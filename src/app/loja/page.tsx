@@ -5,7 +5,8 @@ import { Marked } from "@/components/ui/Marked";
 import { PageHero } from "@/components/ui/PageHero";
 import { Section } from "@/components/ui/Section";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
-import { PRODUCT_CATEGORIES, PRODUCTS, formatPrice, type Product } from "@/data/products";
+import { PRODUCT_CATEGORIES, formatPrice, type Product } from "@/data/products";
+import { getShopProducts } from "@/lib/shop";
 import { stagger } from "@/lib/motion";
 import { WHATSAPP_MESSAGES } from "@/lib/site";
 
@@ -72,6 +73,7 @@ function ProductCard({ product }: { product: Product }) {
 
 export default async function LojaPage({ searchParams }: PageProps<"/loja">) {
   const sp = await searchParams;
+  const PRODUCTS = await getShopProducts();
   const active = PRODUCT_CATEGORIES.find((c) => c.slug === sp.categoria)?.slug;
   const visible = PRODUCTS.filter((p) => p.available !== false && (!active || p.category === active));
   const used = PRODUCT_CATEGORIES.filter((c) => PRODUCTS.some((p) => p.category === c.slug && p.available !== false));

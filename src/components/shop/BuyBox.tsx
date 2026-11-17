@@ -22,7 +22,7 @@ export function BuyBox({ sku, name, price, buy, variants }: Props) {
     `Oi! Vim pela loja do site do De Quebrada e quero comprar: ${cleanName}` +
     (variants ? ` (${variants.label}: ${variant})` : "") +
     // Sem preço definido, o marcador [ ] não vai para a mensagem.
-    (price.startsWith("[") ? "" : ` · ${price}`) +
+    (!/\d/.test(price) ? "" : ` · ${price}`) +
     ` · código ${sku}`;
 
   return (

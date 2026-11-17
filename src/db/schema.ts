@@ -126,3 +126,81 @@ export const memberContents = pgTable("member_contents", {
 });
 
 export type MemberContent = typeof memberContents.$inferSelect;
+
+/** Produtos da loja (/loja), cadastrados pelo painel. Categorias ficam em src/data/products.ts. */
+export const products = pgTable(
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    sku: text("sku").notNull().unique(),
+    name: text("name").notNull(),
+    category: text("category").notNull(),
+    description: text("description").notNull(),
+    /** Preço em centavos. null = "sob consulta". */
+    priceCents: integer("price_cents"),
+    /** Ex.: "Tamanho" + "P, M, G, GG". */
+    variantLabel: text("variant_label"),
+    variantOptions: text("variant_options").array(),
+    imageUrl: text("image_url"),
+    imageAlt: text("image_alt"),
+    buyType: text("buy_type", { enum: ["whatsapp", "external"] }).notNull().default("whatsapp"),
+    buyUrl: text("buy_url"),
+    buyLabel: text("buy_label"),
+    /** false esconde da loja sem apagar. */
+    available: boolean("available").notNull().default(true),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("products_available_idx").on(t.available, t.sortOrder)],
+);
+
+export type ProductRow = typeof products.$inferSelect;
+
+/**
+ * Quizzes de captação (/quiz/[slug]), editáveis no painel.
+ * `steps` é JSON com a lista de passos (ver src/lib/quiz.ts).
+ */
+export const quizzes = pgTable("quizzes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  eyebrow: text("eyebrow").notNull().default(""),
+  /** Texto da capa. Vazio = o quiz começa direto na primeira pergunta. */
+  intro: text("intro").notNull().default(""),
+  ctaLabel: text("cta_label").notNull().default("Começar"),
+  steps: text("steps").notNull().default("[]"),
+  contactTitle: text("contact_title").notNull().default("Como podemos falar com você?"),
+  askEmail: boolean("ask_email").notNull().default(true),
+  askInstagram: boolean("ask_instagram").notNull().default(false),
+  finalTitle: text("final_title").notNull().default("Recebemos!"),
+  finalText: text("final_text").notNull().default("A gente vai te chamar no WhatsApp em breve."),
+  published: boolean("published").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type QuizRow = typeof quizzes.$inferSelect;
+
+/** Leads que vêm dos quizzes. */
+export const leads = pgTable(
+  "leads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Slug do quiz de origem (fica mesmo se o quiz for apagado). */
+    quizSlug: text("quiz_slug").notNull().default("estudio"),
+    quizTitle: text("quiz_title").notNull().default("Monte sua gravação"),
+    name: text("name").notNull(),
+    email: text("email").notNull().default(""),
+    whatsapp: text("whatsapp").notNull(),
+    instagram: text("instagram"),
+    /** Respostas do quiz: { pergunta: resposta }. */
+    answers: text("answers").notNull(),
+    status: text("status", { enum: ["novo", "contatado", "fechado", "perdido"] }).notNull().default("novo"),
+    consentAt: timestamp("consent_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("leads_created_idx").on(t.createdAt)],
+);
+
+export type Lead = typeof leads.$inferSelect;

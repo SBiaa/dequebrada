@@ -14,6 +14,9 @@ const NAV = [
   { href: "/painel/categorias", label: "Categorias" },
   { href: "/painel/assinantes", label: "Assinantes" },
   { href: "/painel/conteudos", label: "Conteúdos exclusivos" },
+  { href: "/painel/produtos", label: "Produtos da loja" },
+  { href: "/painel/quizzes", label: "Quizzes" },
+  { href: "/painel/leads", label: "Leads" },
 ];
 
 export default async function PainelLayout({ children }: LayoutProps<"/painel">) {
