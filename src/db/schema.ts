@@ -1,5 +1,6 @@
 import {
   boolean,
+  date,
   customType,
   index,
   integer,
@@ -7,6 +8,7 @@ import {
   serial,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -204,3 +206,79 @@ export const leads = pgTable(
 );
 
 export type Lead = typeof leads.$inferSelect;
+
+/** Negócio do membro (um por conta), cadastrado em /membros/negocio. */
+export const businesses = pgTable("businesses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  segment: text("segment").notNull().default(""),
+  city: text("city").notNull().default(""),
+  description: text("description").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Perfis do negócio nas redes sociais. */
+export const socialAccounts = pgTable(
+  "social_accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    businessId: uuid("business_id")
+      .notNull()
+      .references(() => businesses.id, { onDelete: "cascade" }),
+    network: text("network").notNull(),
+    handle: text("handle").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("social_accounts_business_idx").on(t.businessId)],
+);
+
+/** Números do perfil num dia (lançados à mão). Um registro por perfil por dia. */
+export const socialSnapshots = pgTable(
+  "social_snapshots",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => socialAccounts.id, { onDelete: "cascade" }),
+    day: date("day", { mode: "string" }).notNull(),
+    followers: integer("followers").notNull(),
+    reach: integer("reach"),
+    profileVisits: integer("profile_visits"),
+    linkClicks: integer("link_clicks"),
+    note: text("note").notNull().default(""),
+  },
+  (t) => [uniqueIndex("social_snapshots_account_day_idx").on(t.accountId, t.day)],
+);
+
+/** Posts publicados e seus resultados (lançados à mão). */
+export const socialPosts = pgTable(
+  "social_posts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => socialAccounts.id, { onDelete: "cascade" }),
+    day: date("day", { mode: "string" }).notNull(),
+    format: text("format").notNull(),
+    title: text("title").notNull(),
+    url: text("url"),
+    reach: integer("reach"),
+    likes: integer("likes"),
+    comments: integer("comments"),
+    shares: integer("shares"),
+    saves: integer("saves"),
+    /** Contatos, pedidos ou vendas que vieram do post. */
+    leads: integer("leads"),
+    note: text("note").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("social_posts_account_day_idx").on(t.accountId, t.day)],
+);
+
+export type SocialAccount = typeof socialAccounts.$inferSelect;
+export type SocialSnapshot = typeof socialSnapshots.$inferSelect;
+export type SocialPost = typeof socialPosts.$inferSelect;
