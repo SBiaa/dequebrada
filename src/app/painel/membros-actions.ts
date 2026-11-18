@@ -33,6 +33,7 @@ export async function setSubscriberAction(formData: FormData): Promise<void> {
     await db.update(users).set({ isSubscriber: value }).where(and(eq(users.id, id), eq(users.role, "member")));
   }
   revalidatePath("/painel/assinantes");
+  revalidatePath("/painel", "layout");
 }
 
 function read(formData: FormData): ContentFields {

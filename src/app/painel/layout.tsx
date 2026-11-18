@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PainelNav } from "./PainelNav";
-import { logoutAction } from "@/app/(conta)/actions";
 import { requireAdmin } from "@/lib/auth";
+import { painelBadges } from "@/lib/painel";
 
 export const metadata: Metadata = {
   title: "Painel",
@@ -11,27 +11,33 @@ export const metadata: Metadata = {
 
 export default async function PainelLayout({ children }: LayoutProps<"/painel">) {
   const user = await requireAdmin();
+  const badges = await painelBadges();
   return (
-    <div className="px-5 py-10 md:py-14">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="eyebrow">Painel do De Quebrada</p>
-            <p className="mt-2 text-muted">Olá, {user.name}.</p>
-          </div>
-          <div className="flex gap-2">
-            <Link href="/blog" className="btn btn-ghost !min-h-10 !px-4 !text-sm">
-              Ver o site
-            </Link>
-          <form action={logoutAction}>
-            <button type="submit" className="btn btn-ghost !min-h-10 !px-4 !text-sm">
-              Sair
-            </button>
-          </form>
-          </div>
+    <div className="lg:flex lg:items-start">
+      <PainelNav userName={user.name} badges={badges} />
+      <div className="min-w-0 flex-1">
+        <form
+          action="/painel/busca"
+          role="search"
+          className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-4 md:px-8"
+        >
+          <label htmlFor="painel-q" className="sr-only">
+            Buscar no painel
+          </label>
+          <input
+            id="painel-q"
+            name="q"
+            type="search"
+            placeholder="Buscar posts, leads ou assinantes"
+            className="min-h-11 min-w-0 flex-1 basis-64 rounded-lg border border-line bg-bg px-4 text-base text-ink placeholder:text-muted/70 focus:border-accent focus:outline-none"
+          />
+          <Link href="/painel/posts/novo" className="btn btn-primary !min-h-11 !px-5 !text-sm">
+            + Novo post
+          </Link>
+        </form>
+        <div className="px-5 py-8 md:px-8 md:py-10">
+          <div className="mx-auto max-w-5xl">{children}</div>
         </div>
-        <PainelNav />
-        <div className="mt-10">{children}</div>
       </div>
     </div>
   );
