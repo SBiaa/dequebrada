@@ -11,6 +11,7 @@ const GROUPS = [
       { href: "/painel/posts", label: "Posts" },
       { href: "/painel/posts/novo", label: "Novo post" },
       { href: "/painel/categorias", label: "Categorias" },
+      { href: "/painel/redes", label: "Minhas redes" },
     ],
   },
   {

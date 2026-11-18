@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { deleteAccountAction, deletePostAction, deleteSnapshotAction } from "@/app/membros/negocio/actions";
 import { GrowthChart } from "@/components/negocio/GrowthChart";
 import { PostForm, SnapshotForm } from "@/components/negocio/Forms";
-import { canSeeExclusive, requireUser } from "@/lib/auth";
 import {
+  type NegocioBase,
   engagementRate,
   fmtDay,
   fmtInt,
@@ -17,9 +17,6 @@ import {
   POST_FORMATS,
   todayISO,
 } from "@/lib/negocio";
-import { deleteAccountAction, deletePostAction, deleteSnapshotAction } from "../actions";
-
-export const metadata: Metadata = { title: "Minha rede", robots: { index: false, follow: false } };
 
 const small = "btn btn-ghost !min-h-9 !px-3 !text-sm";
 const s = (n: number | null) => (n == null ? "" : String(n));
@@ -34,12 +31,19 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
   );
 }
 
-export default async function RedePage({ params, searchParams }: PageProps<"/membros/negocio/[id]">) {
-  const { id } = await params;
-  const sp = await searchParams;
-  const user = await requireUser(`/membros/negocio/${id}`);
-  if (!canSeeExclusive(user)) redirect("/membros/negocio");
-  const account = await getOwnedAccount(user.id, id);
+/** Página de uma rede: gráfico, números e posts. Usada na área de membros e no painel do admin. */
+export async function RedeDetail({
+  userId,
+  accountId,
+  base,
+  novo,
+}: {
+  userId: string;
+  accountId: string;
+  base: NegocioBase;
+  novo: boolean;
+}) {
+  const account = await getOwnedAccount(userId, accountId);
   if (!account) notFound();
 
   const [snaps, posts] = await Promise.all([listSnapshots(account.id), listPosts(account.id)]);
@@ -75,14 +79,13 @@ export default async function RedePage({ params, searchParams }: PageProps<"/mem
     .slice(0, 3);
 
   return (
-    <div className="px-5 py-10 md:py-14">
-      <div className="mx-auto max-w-4xl">
-        <Link href="/membros/negocio" className="block w-fit text-sm text-muted underline">
-          ← Meu negócio
+    <>
+        <Link href={base} className="block w-fit text-sm text-muted underline">
+          ← {base === "/painel/redes" ? "Minhas redes" : "Meu negócio"}
         </Link>
         <p className="eyebrow mt-6">{networkLabel(account.network)}</p>
         <h1 className="h2-section mt-3 [overflow-wrap:anywhere]">@{account.handle}</h1>
-        {sp.novo && (
+        {novo && (
           <p role="status" className="mt-6 rounded-lg border border-accent p-3 font-semibold">
             Rede adicionada. Comece lançando quantos seguidores você tem hoje.
           </p>
@@ -299,12 +302,12 @@ export default async function RedePage({ params, searchParams }: PageProps<"/mem
 
         <form action={deleteAccountAction} className="mt-14 border-t border-line pt-6">
           <input type="hidden" name="accountId" value={account.id} />
+          <input type="hidden" name="base" value={base} />
           <p className="text-sm text-muted">Remover esta rede apaga também todos os registros e posts dela.</p>
           <button type="submit" className="btn btn-ghost mt-3 !min-h-10 !text-sm">
             Remover rede
           </button>
         </form>
-      </div>
-    </div>
+    </>
   );
 }

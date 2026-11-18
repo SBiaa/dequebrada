@@ -57,10 +57,11 @@ export function BusinessForm({
   );
 }
 
-export function AccountForm({ networks }: { networks: Record<string, string> }) {
+export function AccountForm({ networks, base }: { networks: Record<string, string>; base: string }) {
   const [state, action, pending] = useActionState(addAccountAction, undefined);
   return (
     <form action={action} className="grid gap-5">
+      <input type="hidden" name="base" value={base} />
       <Msg state={state} />
       <div className="grid gap-5 sm:grid-cols-2">
         <div>

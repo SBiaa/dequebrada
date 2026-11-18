@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db, schema } from "@/db";
 import { canSeeExclusive, requireUser } from "@/lib/auth";
-import { getBusiness, getOwnedAccount, NETWORKS, POST_FORMATS } from "@/lib/negocio";
+import { getBusiness, getOwnedAccount, NEGOCIO_BASES, type NegocioBase, NETWORKS, POST_FORMATS } from "@/lib/negocio";
 
 const { businesses, socialAccounts, socialSnapshots, socialPosts } = schema;
 
@@ -28,6 +28,16 @@ function day(fd: FormData) {
   return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(d)) ? d : null;
 }
 
+function baseOf(fd: FormData): NegocioBase {
+  const b = String(fd.get("base") ?? "");
+  return (NEGOCIO_BASES as readonly string[]).includes(b) ? (b as NegocioBase) : "/membros/negocio";
+}
+
+/** Atualiza as telas nos dois lugares (membros e painel). */
+function refresh(accountId?: string) {
+  for (const b of NEGOCIO_BASES) revalidatePath(accountId ? `${b}/${accountId}` : b);
+}
+
 async function member() {
   const user = await requireUser("/membros/negocio");
   if (!canSeeExclusive(user)) redirect("/membros/negocio");
@@ -42,7 +52,7 @@ export async function saveBusinessAction(_p: NegocioState, fd: FormData): Promis
   const existing = await getBusiness(user.id);
   if (existing) await db.update(businesses).set(values).where(eq(businesses.id, existing.id));
   else await db.insert(businesses).values({ ...values, userId: user.id });
-  revalidatePath("/membros/negocio");
+  refresh();
   return { ok: "Negócio salvo.", at: Date.now() };
 }
 
@@ -55,15 +65,15 @@ export async function addAccountAction(_p: NegocioState, fd: FormData): Promise<
   if (!(network in NETWORKS)) return fail("Escolha a rede.");
   if (!handle) return fail("Coloque o @ ou nome do perfil.");
   const [row] = await db.insert(socialAccounts).values({ businessId: business.id, network, handle }).returning({ id: socialAccounts.id });
-  redirect(`/membros/negocio/${row.id}?novo=1`);
+  redirect(`${baseOf(fd)}/${row.id}?novo=1`);
 }
 
 export async function deleteAccountAction(fd: FormData) {
   const user = await member();
   const account = await getOwnedAccount(user.id, String(fd.get("accountId") ?? ""));
   if (account) await db.delete(socialAccounts).where(eq(socialAccounts.id, account.id));
-  revalidatePath("/membros/negocio");
-  redirect("/membros/negocio");
+  refresh();
+  redirect(baseOf(fd));
 }
 
 export async function saveSnapshotAction(_p: NegocioState, fd: FormData): Promise<NegocioState> {
@@ -89,7 +99,7 @@ export async function saveSnapshotAction(_p: NegocioState, fd: FormData): Promis
     .insert(socialSnapshots)
     .values({ accountId: account.id, day: d, ...values })
     .onConflictDoUpdate({ target: [socialSnapshots.accountId, socialSnapshots.day], set: values });
-  revalidatePath(`/membros/negocio/${account.id}`);
+  refresh(account.id);
   return { ok: "Números salvos. Se já havia registro nesse dia, ele foi atualizado.", at: Date.now() };
 }
 
@@ -100,7 +110,7 @@ export async function deleteSnapshotAction(fd: FormData) {
   await db
     .delete(socialSnapshots)
     .where(and(eq(socialSnapshots.id, String(fd.get("id") ?? "")), eq(socialSnapshots.accountId, account.id)));
-  revalidatePath(`/membros/negocio/${account.id}`);
+  refresh(account.id);
 }
 
 export async function savePostAction(_p: NegocioState, fd: FormData): Promise<NegocioState> {
@@ -143,7 +153,7 @@ export async function savePostAction(_p: NegocioState, fd: FormData): Promise<Ne
   } else {
     await db.insert(socialPosts).values({ accountId: account.id, ...values });
   }
-  revalidatePath(`/membros/negocio/${account.id}`);
+  refresh(account.id);
   return { ok: postId ? "Post atualizado." : "Post registrado.", at: Date.now() };
 }
 
@@ -154,5 +164,5 @@ export async function deletePostAction(fd: FormData) {
   await db
     .delete(socialPosts)
     .where(and(eq(socialPosts.id, String(fd.get("id") ?? "")), eq(socialPosts.accountId, account.id)));
-  revalidatePath(`/membros/negocio/${account.id}`);
+  refresh(account.id);
 }

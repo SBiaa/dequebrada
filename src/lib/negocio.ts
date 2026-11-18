@@ -18,6 +18,10 @@ export const NETWORKS = {
 } as const;
 export type Network = keyof typeof NETWORKS;
 
+/** Onde as telas de negócio são mostradas: área de membros ou painel do admin. */
+export const NEGOCIO_BASES = ["/membros/negocio", "/painel/redes"] as const;
+export type NegocioBase = (typeof NEGOCIO_BASES)[number];
+
 export const POST_FORMATS = ["Reels / vídeo curto", "Carrossel", "Foto", "Stories", "Vídeo longo", "Live", "Texto"] as const;
 
 export function networkLabel(n: string) {
