@@ -15,4 +15,5 @@ export async function setLeadStatusAction(formData: FormData) {
   if (!STATUS.includes(status)) return;
   await db.update(schema.leads).set({ status }).where(eq(schema.leads.id, id));
   revalidatePath("/painel/leads");
+  revalidatePath("/painel", "layout");
 }

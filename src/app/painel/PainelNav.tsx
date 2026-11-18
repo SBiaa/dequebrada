@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { logoutAction } from "@/app/(conta)/actions";
 
-const GROUPS = [
+type Badge = "assinantes" | "leads";
+
+const GROUPS: { title?: string; links: { href: string; label: string; badge?: Badge }[] }[] = [
+  { links: [{ href: "/painel", label: "Início" }] },
   {
     title: "Blog",
     links: [
-      { href: "/painel", label: "Início" },
       { href: "/painel/posts", label: "Posts" },
-      { href: "/painel/posts/novo", label: "Novo post" },
       { href: "/painel/categorias", label: "Categorias" },
       { href: "/painel/redes", label: "Minhas redes" },
     ],
@@ -17,7 +20,7 @@ const GROUPS = [
   {
     title: "Membros",
     links: [
-      { href: "/painel/assinantes", label: "Assinantes" },
+      { href: "/painel/assinantes", label: "Assinantes", badge: "assinantes" },
       { href: "/painel/conteudos", label: "Conteúdos exclusivos" },
     ],
   },
@@ -27,42 +30,103 @@ const GROUPS = [
       { href: "/painel/produtos", label: "Produtos da loja" },
       { href: "/painel/banners", label: "Banners da home" },
       { href: "/painel/quizzes", label: "Quizzes" },
-      { href: "/painel/leads", label: "Leads" },
+      { href: "/painel/leads", label: "Leads", badge: "leads" },
     ],
   },
 ];
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/painel") return pathname === "/painel";
-  if (href === "/painel/posts") return pathname === href || /^\/painel\/posts\/(?!novo)/.test(pathname);
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function PainelNav() {
+export function PainelNav({
+  userName,
+  badges,
+}: {
+  userName: string;
+  badges: Record<Badge, number>;
+}) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const pending = badges.assinantes + badges.leads;
+
   return (
-    <nav aria-label="Painel" className="mt-6 grid gap-4 sm:grid-cols-3">
-      {GROUPS.map((g) => (
-        <div key={g.title}>
-          <p className="text-xs font-bold uppercase tracking-wider text-muted">{g.title}</p>
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {g.links.map((n) => {
-              const active = isActive(pathname, n.href);
-              return (
-                <li key={n.href}>
-                  <Link
-                    href={n.href}
-                    aria-current={active ? "page" : undefined}
-                    className={`btn !min-h-10 !px-4 !text-sm ${active ? "btn-primary" : "btn-ghost"}`}
-                  >
-                    {n.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+    <aside className="border-b border-line bg-surface lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-64 lg:shrink-0 lg:flex-col lg:self-stretch lg:overflow-y-auto lg:border-b-0 lg:border-r">
+      <div className="flex items-center justify-between px-5 py-4 lg:px-6 lg:pt-6">
+        <p className="eyebrow">Painel</p>
+        <button
+          type="button"
+          className="btn btn-ghost !min-h-10 !px-4 !text-sm lg:hidden"
+          aria-expanded={open}
+          aria-controls="painel-menu"
+          onClick={() => setOpen((o) => !o)}
+        >
+          {open ? "Fechar menu" : "Menu"}
+          {!open && pending > 0 && (
+            <span className="ml-2 rounded-full bg-warn px-2 text-xs font-bold text-black">
+              {pending}
+              <span className="sr-only"> pendentes</span>
+            </span>
+          )}
+        </button>
+      </div>
+
+      <div id="painel-menu" className={`${open ? "flex" : "hidden"} flex-1 flex-col lg:flex`}>
+        <nav aria-label="Painel" className="flex flex-col gap-5 px-3 pb-6">
+          {GROUPS.map((g, i) => (
+            <div key={g.title ?? i}>
+              {g.title && (
+                <p className="px-3 pb-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{g.title}</p>
+              )}
+              <ul className="flex flex-col gap-0.5">
+                {g.links.map((n) => {
+                  const active = isActive(pathname, n.href);
+                  const count = n.badge ? badges[n.badge] : 0;
+                  return (
+                    <li key={n.href}>
+                      <Link
+                        href={n.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex min-h-11 items-center justify-between gap-2 rounded-lg px-3 text-[0.95rem] transition-colors ${
+                          active ? "bg-surface-2 font-bold text-ink" : "text-muted hover:bg-surface-2 hover:text-ink"
+                        }`}
+                      >
+                        {n.label}
+                        {count > 0 && (
+                          <span
+                            className={`min-w-6 rounded-full px-2 text-center text-xs font-bold ${
+                              n.badge === "assinantes" ? "bg-warn text-black" : "bg-accent text-accent-ink"
+                            }`}
+                          >
+                            {count}
+                            <span className="sr-only"> pendentes</span>
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-line px-6 py-4">
+          <div className="min-w-0">
+            <p className="truncate font-semibold">{userName}</p>
+            <Link href="/blog" className="text-sm text-accent hover:underline">
+              Ver o site
+            </Link>
+          </div>
+          <form action={logoutAction}>
+            <button type="submit" className="btn btn-ghost !min-h-10 !px-3 !text-sm">
+              Sair
+            </button>
+          </form>
         </div>
-      ))}
-    </nav>
+      </div>
+    </aside>
   );
 }

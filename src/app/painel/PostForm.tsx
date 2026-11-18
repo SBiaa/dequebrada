@@ -101,40 +101,107 @@ function Inner({
     [],
   );
 
+  const [tab, setTab] = useState<"write" | "preview">("write");
+  const [dirty, setDirty] = useState(false);
+  const statusLabel = dirty
+    ? "Alterações não salvas"
+    : values.status === "published"
+      ? "Publicado"
+      : values.id
+        ? "Rascunho salvo"
+        : "Novo post";
+  const tabClass = (on: boolean) =>
+    `min-h-10 rounded-md px-4 text-sm ${on ? "bg-surface-2 font-bold text-ink" : "text-muted hover:text-ink"}`;
+
   return (
-    // No computador grande, o formulário sai da coluna do painel e divide a tela com a prévia.
-    <div className="xl:relative xl:left-1/2 xl:grid xl:w-[min(1440px,calc(100vw-5rem))] xl:-translate-x-1/2 xl:grid-cols-2 xl:items-start xl:gap-8">
-      <form
-        ref={formRef}
-        action={action}
-        onInput={readForm}
-        onChange={readForm}
-        className="space-y-7"
-        noValidate
-      >
+    <form
+      ref={formRef}
+      action={action}
+      onInput={() => {
+        setDirty(true);
+        readForm();
+      }}
+      onChange={readForm}
+      noValidate
+    >
       <UnsavedGuard />
-        {values.id && <input type="hidden" name="id" value={values.id} />}
-        <FormMessage state={state} />
+      {values.id && <input type="hidden" name="id" value={values.id} />}
+      <FormMessage state={state} />
 
-        <Field
-          label="Título"
-          name="title"
-          defaultValue={values.title}
-          required
-          maxLength={200}
-        />
+      <div role="tablist" aria-label="Modo" className="mt-6 inline-flex flex-wrap rounded-lg border border-line bg-bg p-1">
+        <button
+          type="button"
+          role="tab"
+          id="tab-write"
+          aria-selected={tab === "write"}
+          aria-controls="panel-write"
+          className={tabClass(tab === "write")}
+          onClick={() => setTab("write")}
+        >
+          Escrever
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-preview"
+          aria-selected={tab === "preview"}
+          aria-controls="panel-preview"
+          className={tabClass(tab === "preview")}
+          onClick={() => setTab("preview")}
+        >
+          Prévia (card, celular e computador)
+        </button>
+      </div>
 
-        <div className="grid gap-7 md:grid-cols-2">
+      <div
+        id="panel-write"
+        role="tabpanel"
+        aria-labelledby="tab-write"
+        className={`mt-8 gap-8 lg:items-start ${tab === "write" ? "lg:flex" : "hidden"}`}
+      >
+        <div className="min-w-0 flex-1 space-y-7">
+          <Field label="Título" name="title" defaultValue={values.title} required maxLength={200} />
+
+          <TextArea
+            label="Resumo"
+            name="excerpt"
+            rows={3}
+            maxLength={320}
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            hint={`Aparece no Google e nos cards do blog. Ideal: até 160 caracteres (${excerpt.length}/160).`}
+            required
+          />
+
+          <TextArea
+            label="Texto da notícia"
+            name="body"
+            rows={18}
+            defaultValue={values.body}
+            required
+            hint="Deixe uma linha em branco entre parágrafos. **negrito**, *itálico*, ## Subtítulo, - item de lista, [texto do link](https://...)."
+          />
+
+          <details className="rounded-xl border border-line p-5">
+            <summary className="cursor-pointer font-semibold">Opções avançadas</summary>
+            <div className="mt-5">
+              <Field
+                label="Endereço do post (slug)"
+                name="slug"
+                defaultValue={values.slug}
+                maxLength={100}
+                hint="Fica em dequebrada.com/blog/endereco. Se deixar vazio, é criado a partir do título. Evite mudar depois de publicado."
+              />
+            </div>
+          </details>
+        </div>
+
+        <aside className="mt-8 space-y-6 lg:mt-0 lg:w-80 lg:shrink-0">
           <div>
             <label htmlFor="categoryId" className="block font-semibold">
               Categoria
             </label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              defaultValue={values.categoryId ?? ""}
-              className={inputClass}
-            >
+            <select id="categoryId" name="categoryId" defaultValue={values.categoryId ?? ""} className={inputClass}>
               <option value="">Sem categoria</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -143,95 +210,63 @@ function Inner({
               ))}
             </select>
           </div>
-          <Field
-            label="Autor"
-            name="authorName"
-            defaultValue={values.authorName}
-            maxLength={100}
-          />
-        </div>
 
-        <TextArea
-          label="Resumo"
-          name="excerpt"
-          rows={3}
-          maxLength={320}
-          value={excerpt}
-          onChange={(e) => setExcerpt(e.target.value)}
-          hint={`Aparece no Google e nos cards do blog. Ideal: até 160 caracteres (${excerpt.length}/160).`}
-          required
-        />
+          <Field label="Autor" name="authorName" defaultValue={values.authorName} maxLength={100} />
 
-        <fieldset className="space-y-4 rounded-xl border border-line p-5">
-          <legend className="px-2 font-semibold">Imagem de capa</legend>
-          <CoverPicker
-            currentUrl={values.coverUrl || null}
-            currentAlt={values.coverAlt}
-            onPreview={onCover}
-          />
-          <Field
-            label="Descrição da imagem (texto alternativo)"
-            name="coverAlt"
-            defaultValue={values.coverAlt}
-            maxLength={200}
-            hint='Diga o que aparece na foto. Ex.: "Novo ponto de ônibus com painel solar na Vila São Paulo".'
-          />
-        </fieldset>
-
-        <TextArea
-          label="Texto da notícia"
-          name="body"
-          rows={18}
-          defaultValue={values.body}
-          required
-          hint="Deixe uma linha em branco entre parágrafos. **negrito**, *itálico*, ## Subtítulo, - item de lista, [texto do link](https://...)."
-        />
-
-        <details className="rounded-xl border border-line p-5">
-          <summary className="cursor-pointer font-semibold">
-            Opções avançadas
-          </summary>
-          <div className="mt-5">
+          <fieldset className="space-y-4 rounded-xl border border-line p-5">
+            <legend className="px-2 font-semibold">Imagem de capa</legend>
+            <CoverPicker currentUrl={values.coverUrl || null} currentAlt={values.coverAlt} onPreview={onCover} />
             <Field
-              label="Endereço do post (slug)"
-              name="slug"
-              defaultValue={values.slug}
-              maxLength={100}
-              hint="Fica em dequebrada.com/blog/endereco. Se deixar vazio, é criado a partir do título. Evite mudar depois de publicado."
+              label="Descrição da imagem"
+              name="coverAlt"
+              defaultValue={values.coverAlt}
+              maxLength={200}
+              hint='Diga o que aparece na foto. Ex.: "Novo ponto de ônibus com painel solar na Vila São Paulo".'
             />
-          </div>
-        </details>
+          </fieldset>
 
-        <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row">
-          <button
-            type="submit"
-            name="intent"
-            value="publish"
-            className="btn btn-primary"
-            disabled={pending}
-          >
-            {pending
-              ? "Salvando..."
-              : values.status === "published"
-                ? "Salvar e manter publicado"
-                : "Publicar"}
-          </button>
+          <div>
+            <p className="font-semibold">Como aparece no Google</p>
+            <div className="mt-2 rounded-xl bg-white p-4 text-sm leading-snug text-[#4d5156]">
+              <p className="text-xs text-[#202124]">dequebrada.com › blog</p>
+              <p className="mt-1 text-base text-[#1a0dab] [overflow-wrap:anywhere]">{preview.title || "Título do post"}</p>
+              <p className="mt-1 [overflow-wrap:anywhere]">
+                {preview.excerpt
+                  ? preview.excerpt.length > 160
+                    ? `${preview.excerpt.slice(0, 157)}…`
+                    : preview.excerpt
+                  : "O resumo aparece aqui."}
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div
+        id="panel-preview"
+        role="tabpanel"
+        aria-labelledby="tab-preview"
+        className={tab === "preview" ? "mt-8" : "hidden"}
+      >
+        <PostPreview data={preview} />
+      </div>
+
+      <div className="sticky bottom-3 z-10 mt-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface/95 px-4 py-3 shadow-lg backdrop-blur">
+        <p className="flex items-center gap-2 text-sm text-muted" aria-live="polite">
+          <span aria-hidden="true" className={`inline-block size-2 rounded-full ${dirty ? "bg-warn" : "bg-wa"}`} />
+          {statusLabel}
+        </p>
+        <div className="flex flex-wrap gap-2">
           {values.status !== "published" && (
-            <button
-              type="submit"
-              name="intent"
-              value="draft"
-              className="btn btn-ghost"
-              disabled={pending}
-            >
+            <button type="submit" name="intent" value="draft" className="btn btn-ghost !min-h-11" disabled={pending}>
               Salvar rascunho
             </button>
           )}
+          <button type="submit" name="intent" value="publish" className="btn btn-primary !min-h-11" disabled={pending}>
+            {pending ? "Salvando..." : values.status === "published" ? "Salvar alterações" : "Publicar"}
+          </button>
         </div>
-      </form>
-      <div className="mt-10 xl:sticky xl:top-28 xl:mt-0">
-        <PostPreview data={preview} />
       </div>
-    </div>
+    </form>
   );
 }
