@@ -10,6 +10,11 @@ function daysAgo(n: number): Date {
   return new Date(Date.now() - n * 24 * 60 * 60 * 1000);
 }
 
+/** Contas criadas a partir desta data ainda contam como "esperando liberação". */
+export function pendingSince(): Date {
+  return daysAgo(PENDING_DAYS);
+}
+
 const pendingWhere = () =>
   and(eq(users.role, "member"), eq(users.isSubscriber, false), gte(users.createdAt, daysAgo(PENDING_DAYS)));
 
