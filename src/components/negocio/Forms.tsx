@@ -63,7 +63,7 @@ export function AccountForm({ networks, base }: { networks: Record<string, strin
     <form action={action} className="grid gap-5">
       <input type="hidden" name="base" value={base} />
       <Msg state={state} />
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4">
         <div>
           <label htmlFor="network" className="block font-semibold">
             Rede
