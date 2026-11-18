@@ -1,5 +1,6 @@
 "use client";
 
+import { UnsavedGuard } from "@/components/forms/UnsavedGuard";
 import { useActionState, useState } from "react";
 import { QuizRunner } from "@/components/quiz/QuizRunner";
 import { newStepId, STEP_KINDS, type QuizStep, type StepKind } from "@/lib/quiz";
@@ -66,6 +67,7 @@ export function QuizEditor({ values, notice }: { values: QuizValues; notice?: st
 
   return (
     <form action={action} className="grid gap-8">
+      <UnsavedGuard />
       <input type="hidden" name="id" value={v.id} />
       <input type="hidden" name="steps" value={JSON.stringify(v.steps)} />
 

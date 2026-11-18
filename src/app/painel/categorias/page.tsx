@@ -21,12 +21,18 @@ export default async function CategoriasPage() {
                 <CategoryForm id={c.id} name={c.name} compact />
                 <p className="mt-1 text-sm text-muted">/blog/categoria/{c.slug}</p>
               </div>
-              <form action={deleteCategoryAction}>
-                <input type="hidden" name="id" value={c.id} />
-                <button type="submit" className="btn btn-ghost !min-h-10 !text-sm">
+              <details className="md:text-right">
+                <summary className="cursor-pointer text-sm font-semibold text-red-300">
                   Excluir <span className="sr-only">{c.name}</span>
-                </button>
-              </form>
+                </summary>
+                <form action={deleteCategoryAction} className="mt-2">
+                  <input type="hidden" name="id" value={c.id} />
+                  <p className="text-sm text-muted">Os posts dela ficam &quot;sem categoria&quot;.</p>
+                  <button type="submit" className="btn btn-ghost mt-2 !min-h-10 !text-sm text-red-300">
+                    Sim, excluir {c.name}
+                  </button>
+                </form>
+              </details>
             </li>
           ))}
         </ul>

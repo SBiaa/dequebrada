@@ -1,5 +1,6 @@
 "use client";
 
+import { UnsavedGuard } from "@/components/forms/UnsavedGuard";
 import { useActionState, useCallback, useRef, useState } from "react";
 import {
   Field,
@@ -111,6 +112,7 @@ function Inner({
         className="space-y-7"
         noValidate
       >
+      <UnsavedGuard />
         {values.id && <input type="hidden" name="id" value={values.id} />}
         <FormMessage state={state} />
 
