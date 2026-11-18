@@ -15,8 +15,11 @@ const GROUPS: { title?: string; links: { href: string; label: string; icon: Icon
     links: [
       { href: "/painel/posts", icon: "doc", label: "Posts" },
       { href: "/painel/categorias", icon: "tag", label: "Categorias" },
-      { href: "/painel/redes", icon: "chart", label: "Minhas redes" },
     ],
+  },
+  {
+    title: "Redes sociais",
+    links: [{ href: "/painel/redes", icon: "chart", label: "Minhas redes" }],
   },
   {
     title: "Membros",
