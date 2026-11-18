@@ -5,6 +5,7 @@ export const STEP_KINDS = {
   multi: "Várias escolhas",
   text: "Resposta escrita",
   info: "Tela de texto (sem pergunta)",
+  video: "Vídeo (YouTube, Vimeo ou link .mp4)",
 } as const;
 
 export type StepKind = keyof typeof STEP_KINDS;
@@ -22,7 +23,38 @@ export type QuizStep = {
   placeholder: string;
   /** Texto do botão de seguir (multi, text e info). */
   buttonLabel: string;
+  /** Link do vídeo (só em video). */
+  videoUrl: string;
 };
+
+export type VideoEmbed = { type: "iframe" | "file"; src: string };
+
+/** Converte um link de YouTube, Vimeo ou arquivo de vídeo no endereço que o player usa. */
+export function videoEmbed(raw: string): VideoEmbed | null {
+  let u: URL;
+  try {
+    u = new URL(raw.trim());
+  } catch {
+    return null;
+  }
+  if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+  const host = u.hostname.replace(/^www\.|^m\./, "");
+  let yt = "";
+  if (host === "youtu.be") yt = u.pathname.slice(1);
+  else if (host === "youtube.com" || host === "youtube-nocookie.com") {
+    yt = u.searchParams.get("v") ?? u.pathname.match(/^\/(?:embed|shorts|live)\/([^/]+)/)?.[1] ?? "";
+  }
+  if (yt) {
+    const id = yt.replace(/[^\w-]/g, "");
+    return id ? { type: "iframe", src: `https://www.youtube-nocookie.com/embed/${id}?rel=0` } : null;
+  }
+  if (host === "vimeo.com" || host === "player.vimeo.com") {
+    const id = u.pathname.match(/(\d+)/)?.[1];
+    return id ? { type: "iframe", src: `https://player.vimeo.com/video/${id}` } : null;
+  }
+  if (/\.(mp4|webm|mov)$/i.test(u.pathname)) return { type: "file", src: u.toString() };
+  return null;
+}
 
 const MAX_STEPS = 20;
 
@@ -63,9 +95,11 @@ export function parseSteps(raw: string): QuizStep[] {
       options: kind === "single" || kind === "multi" ? options : [],
       placeholder: str(s.placeholder, 150),
       buttonLabel: str(s.buttonLabel, 60),
+      videoUrl: kind === "video" ? str(s.videoUrl, 500) : "",
     };
     if (!step.question) continue;
     if ((kind === "single" || kind === "multi") && step.options.length < 2) continue;
+    if (kind === "video" && !videoEmbed(step.videoUrl)) continue;
     out.push(step);
   }
   return out;
@@ -73,7 +107,7 @@ export function parseSteps(raw: string): QuizStep[] {
 
 /** Problemas que impedem salvar o quiz (mostrados no painel). */
 export function stepProblems(steps: QuizStep[]): string | null {
-  const asks = steps.filter((s) => s.kind !== "info");
+  const asks = steps.filter((s) => s.kind !== "info" && s.kind !== "video");
   if (asks.length === 0) return "Coloque pelo menos uma pergunta.";
   return null;
 }

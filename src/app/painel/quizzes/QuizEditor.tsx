@@ -3,7 +3,7 @@
 import { UnsavedGuard } from "@/components/forms/UnsavedGuard";
 import { useActionState, useState } from "react";
 import { QuizRunner } from "@/components/quiz/QuizRunner";
-import { newStepId, STEP_KINDS, type QuizStep, type StepKind } from "@/lib/quiz";
+import { newStepId, STEP_KINDS, videoEmbed, type QuizStep, type StepKind } from "@/lib/quiz";
 import { saveQuizAction } from "../quizzes-actions";
 
 export type QuizValues = {
@@ -60,6 +60,7 @@ export function QuizEditor({ values, notice }: { values: QuizValues; notice?: st
         options: kind === "single" || kind === "multi" ? ["", ""] : [],
         placeholder: "",
         buttonLabel: "",
+        videoUrl: "",
       },
     ]);
 
@@ -141,7 +142,7 @@ export function QuizEditor({ values, notice }: { values: QuizValues; notice?: st
                 </button>
               </div>
             </div>
-            <Field label={s.kind === "info" ? "Título da tela" : "Pergunta"}>
+            <Field label={s.kind === "info" || s.kind === "video" ? "Título da tela" : "Pergunta"}>
               <input value={s.question} onChange={(e) => setStep(i, { question: e.target.value })} className={input} />
             </Field>
             <Field label="Texto de apoio (opcional)">
@@ -180,6 +181,23 @@ export function QuizEditor({ values, notice }: { values: QuizValues; notice?: st
                   <span className="text-sm text-red-500">Coloque pelo menos 2 opções, senão o passo é descartado.</span>
                 )}
               </div>
+            )}
+            {s.kind === "video" && (
+              <Field
+                label="Link do vídeo"
+                hint="Cole o link do YouTube (pode ser não listado), do Vimeo ou de um arquivo .mp4."
+              >
+                <input
+                  type="url"
+                  value={s.videoUrl ?? ""}
+                  onChange={(e) => setStep(i, { videoUrl: e.target.value })}
+                  placeholder="https://youtu.be/..."
+                  className={input}
+                />
+                {s.videoUrl?.trim() && !videoEmbed(s.videoUrl) && (
+                  <span className="text-sm text-red-500">Não reconheci esse link, o passo vai ser descartado.</span>
+                )}
+              </Field>
             )}
             {s.kind === "text" && (
               <Field label="Texto de exemplo no campo">
@@ -252,7 +270,13 @@ export function QuizEditor({ values, notice }: { values: QuizValues; notice?: st
               title: v.title || "Título do quiz",
               steps: v.steps
                 .map((s) => ({ ...s, options: s.options.filter((o) => o.trim()) }))
-                .filter((s) => s.question.trim() && (s.kind === "text" || s.kind === "info" || s.options.length >= 2)),
+                .filter(
+                  (s) =>
+                    s.question.trim() &&
+                    (s.kind === "video"
+                      ? !!videoEmbed(s.videoUrl ?? "")
+                      : s.kind === "text" || s.kind === "info" || s.options.length >= 2),
+                ),
             }}
           />
         </div>

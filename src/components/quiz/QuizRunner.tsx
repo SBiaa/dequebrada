@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { saveLeadAction } from "@/app/quiz/[slug]/actions";
-import type { QuizStep } from "@/lib/quiz";
+import { videoEmbed, type QuizStep } from "@/lib/quiz";
 import { whatsappUrl } from "@/lib/whatsapp";
 
 export type QuizView = {
@@ -58,7 +58,7 @@ export function QuizRunner({ quiz, preview = false }: { quiz: QuizView; preview?
 
   if (done) {
     const resumo = quiz.steps
-      .filter((s) => s.kind !== "info" && answers[s.id])
+      .filter((s) => s.kind !== "info" && s.kind !== "video" && answers[s.id])
       .map((s) => `• ${s.question} ${[answers[s.id]].flat().join(", ")}`)
       .join("\n");
     const msg = `Oi! Sou ${form.name.trim()} e acabei de responder o quiz "${quiz.title}" no site.\n${resumo}`;
@@ -185,7 +185,9 @@ export function QuizRunner({ quiz, preview = false }: { quiz: QuizView; preview?
             </div>
           )}
 
-          {current.kind === "info" && (
+          {current.kind === "video" && <QuizVideo url={current.videoUrl} title={current.question} />}
+
+          {(current.kind === "info" || current.kind === "video") && (
             <button type="button" onClick={next} className="btn btn-primary mt-8 w-full">
               {current.buttonLabel || "Continuar"}
             </button>
@@ -267,6 +269,26 @@ export function QuizRunner({ quiz, preview = false }: { quiz: QuizView; preview?
           </button>
           {preview && <p className="text-center text-sm text-muted">Prévia: nada é enviado.</p>}
         </form>
+      )}
+    </div>
+  );
+}
+
+function QuizVideo({ url, title }: { url: string; title: string }) {
+  const v = videoEmbed(url);
+  if (!v) return <p className="mt-8 text-sm text-red-500">Link de vídeo inválido.</p>;
+  return (
+    <div className="mt-8 aspect-video overflow-hidden rounded-xl border border-line bg-black">
+      {v.type === "iframe" ? (
+        <iframe
+          src={v.src}
+          title={title}
+          className="size-full"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+        />
+      ) : (
+        <video src={v.src} controls playsInline preload="metadata" className="size-full" />
       )}
     </div>
   );

@@ -19,7 +19,7 @@ type Seed = {
 };
 
 function step(id: string, kind: QuizStep["kind"], question: string, extra: Partial<QuizStep> = {}): QuizStep {
-  return { id, kind, question, hint: "", options: [], placeholder: "", buttonLabel: "", ...extra };
+  return { id, kind, question, hint: "", options: [], placeholder: "", buttonLabel: "", videoUrl: "", ...extra };
 }
 
 export const QUIZ_SEEDS: Seed[] = [
