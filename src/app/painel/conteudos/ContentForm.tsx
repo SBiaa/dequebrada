@@ -1,5 +1,6 @@
 "use client";
 
+import { UnsavedGuard } from "@/components/forms/UnsavedGuard";
 import { useActionState } from "react";
 import { Field, FormMessage, TextArea, inputClass } from "@/components/forms/Field";
 import { saveContentAction, type ContentFields, type ContentFormState } from "../membros-actions";
@@ -29,6 +30,7 @@ function Inner({
 }) {
   return (
     <form action={action} className="space-y-7" noValidate>
+      <UnsavedGuard />
       {v.id && <input type="hidden" name="id" value={v.id} />}
       <FormMessage state={state} />
       <Field label="Título" name="title" defaultValue={v.title} required maxLength={200} />

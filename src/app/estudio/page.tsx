@@ -56,7 +56,10 @@ export default function EstudioPage() {
             <WhatsAppButton message={WHATSAPP_MESSAGES.estudio} source="estudio-hero-agendar">
               Agendar gravação
             </WhatsAppButton>
-            <a href="#entrevista" className="btn btn-ghost">
+            <a href="/quiz/estudio" className="btn btn-ghost">
+              Monte sua gravação
+            </a>
+            <a href="/quiz/participe" className="btn btn-ghost">
               Quero ser entrevistado
             </a>
           </>
@@ -136,9 +139,12 @@ export default function EstudioPage() {
             </div>
           ))}
         </div>
-        <div className="mt-8 flex">
-          <WhatsAppButton message={WHATSAPP_MESSAGES.entrevista} source="estudio-entrevista">
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a href="/quiz/participe" className="btn btn-primary">
             Quero participar
+          </a>
+          <WhatsAppButton message={WHATSAPP_MESSAGES.entrevista} source="estudio-entrevista">
+            Falar no WhatsApp
           </WhatsAppButton>
         </div>
       </Section>

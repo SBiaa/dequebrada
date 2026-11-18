@@ -15,6 +15,41 @@
       "when": 1794436875496,
       "tag": "0001_membros",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794947814179,
+      "tag": "0002_loja",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794948923468,
+      "tag": "0003_leads",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794950897259,
+      "tag": "0004_quizzes",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794952281770,
+      "tag": "0005_negocio_membros",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795008897102,
+      "tag": "0006_banners",
+      "breakpoints": true
     }
   ]
 }

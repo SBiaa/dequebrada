@@ -20,6 +20,7 @@ const BENEFITS: CardItem[] = [
   { icon: "video", title: "Episódios no site", text: "Todos os episódios do De Quebrada Podcast num lugar só, pra assistir aqui mesmo." },
   { icon: "star", title: "Conteúdos exclusivos", text: "Vídeos, aulas e materiais só para assinantes." },
   { icon: "clipboard", title: "Materiais para baixar", text: "PDFs e roteiros pra colocar em prática." },
+  { icon: "rocket", title: "Painel do seu negócio", text: "Lance seguidores, insights e posts das suas redes e acompanhe o crescimento em gráficos." },
 ];
 
 export default async function MembrosPage({ searchParams }: PageProps<"/membros">) {
@@ -81,6 +82,11 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
             <Link href="/membros/episodios" className="btn btn-primary">
               Assistir aos episódios
             </Link>
+            {exclusive && (
+              <Link href="/membros/negocio" className="btn btn-ghost">
+                Meu negócio
+              </Link>
+            )}
             <Link href="/conta" className="btn btn-ghost">
               Minha conta
             </Link>

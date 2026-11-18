@@ -170,7 +170,7 @@ export async function deletePostAction(formData: FormData): Promise<void> {
     await deleteCover(deleted?.coverUrl);
   }
   refreshBlog();
-  redirect("/painel?excluido=1");
+  redirect("/painel/posts?excluido=1");
 }
 
 export async function unpublishPostAction(formData: FormData): Promise<void> {

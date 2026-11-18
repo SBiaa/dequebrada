@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LocalBusinessJsonLd } from "@/components/layout/JsonLd";
 import { AboutTeaser } from "@/components/sections/AboutTeaser";
+import { Banners } from "@/components/sections/Banners";
 import { ChannelsStrip } from "@/components/sections/ChannelsStrip";
 import { Faq } from "@/components/sections/Faq";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -28,6 +29,7 @@ export default function Home() {
       <LocalBusinessJsonLd />
       <HomeHero />
       <Stats items={BRAND_STATS} />
+      <Banners />
       <NewsPreview />
       <Products />
       <RaioX />
