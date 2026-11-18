@@ -21,7 +21,15 @@ export type IconName =
   | "camera"
   | "route"
   | "calendar"
-  | "star";
+  | "star"
+  | "home"
+  | "doc"
+  | "tag"
+  | "users"
+  | "lock"
+  | "bag"
+  | "image"
+  | "userPlus";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   wallet: (
@@ -160,6 +168,59 @@ const PATHS: Record<IconName, React.ReactNode> = {
     </>
   ),
   star: <path d="m12 3 2.700 5.600 6.100.9-4.400 4.300 1 6.100L12 17l-5.400 2.900 1-6.100L3.200 9.500l6.100-.9L12 3Z" />,
+  home: (
+    <>
+      <path d="M3 11 12 4l9 7" />
+      <path d="M5 10v10h14V10" />
+      <path d="M10 20v-6h4v6" />
+    </>
+  ),
+  doc: (
+    <>
+      <path d="M6 3h8l4 4v14H6V3Z" />
+      <path d="M14 3v4h4" />
+      <path d="M9 12h6M9 16h6" />
+    </>
+  ),
+  tag: (
+    <>
+      <path d="M3 12V4h8l10 10-8 8L3 12Z" />
+      <circle cx="7.5" cy="8.5" r="1.3" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c.6-3.6 3.2-6 6.5-6s5.9 2.4 6.5 6" />
+      <path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.4c2 .8 3.2 2.8 3.5 5.6" />
+    </>
+  ),
+  lock: (
+    <>
+      <rect x="4.5" y="10.5" width="15" height="10" rx="2" />
+      <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+    </>
+  ),
+  bag: (
+    <>
+      <path d="M5 8h14l-1 13H6L5 8Z" />
+      <path d="M9 8V6.5a3 3 0 0 1 6 0V8" />
+    </>
+  ),
+  image: (
+    <>
+      <rect x="3" y="4.5" width="18" height="15" rx="2" />
+      <circle cx="8.5" cy="9.5" r="1.6" />
+      <path d="m3.5 17.5 5-5 4 4 3-3 5 5" />
+    </>
+  ),
+  userPlus: (
+    <>
+      <circle cx="10" cy="8" r="3.5" />
+      <path d="M3.5 20c.6-3.6 3.2-6 6.5-6 1.6 0 3 .5 4.1 1.4" />
+      <path d="M18 14v6M15 17h6" />
+    </>
+  ),
 };
 
 export function Icon({ name, className = "h-6 w-6" }: { name: IconName; className?: string }) {

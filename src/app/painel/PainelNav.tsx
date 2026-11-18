@@ -4,33 +4,34 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { logoutAction } from "@/app/(conta)/actions";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
 type Badge = "assinantes" | "leads";
 
-const GROUPS: { title?: string; links: { href: string; label: string; badge?: Badge }[] }[] = [
-  { links: [{ href: "/painel", label: "Início" }] },
+const GROUPS: { title?: string; links: { href: string; label: string; icon: IconName; badge?: Badge }[] }[] = [
+  { links: [{ href: "/painel", icon: "home", label: "Início" }] },
   {
     title: "Blog",
     links: [
-      { href: "/painel/posts", label: "Posts" },
-      { href: "/painel/categorias", label: "Categorias" },
-      { href: "/painel/redes", label: "Minhas redes" },
+      { href: "/painel/posts", icon: "doc", label: "Posts" },
+      { href: "/painel/categorias", icon: "tag", label: "Categorias" },
+      { href: "/painel/redes", icon: "chart", label: "Minhas redes" },
     ],
   },
   {
     title: "Membros",
     links: [
-      { href: "/painel/assinantes", label: "Assinantes", badge: "assinantes" },
-      { href: "/painel/conteudos", label: "Conteúdos exclusivos" },
+      { href: "/painel/assinantes", icon: "users", label: "Assinantes", badge: "assinantes" },
+      { href: "/painel/conteudos", icon: "lock", label: "Conteúdos exclusivos" },
     ],
   },
   {
     title: "Vendas",
     links: [
-      { href: "/painel/produtos", label: "Produtos da loja" },
-      { href: "/painel/banners", label: "Banners da home" },
-      { href: "/painel/quizzes", label: "Quizzes" },
-      { href: "/painel/leads", label: "Leads", badge: "leads" },
+      { href: "/painel/produtos", icon: "bag", label: "Produtos da loja" },
+      { href: "/painel/banners", icon: "image", label: "Banners da home" },
+      { href: "/painel/quizzes", icon: "clipboard", label: "Quizzes" },
+      { href: "/painel/leads", icon: "userPlus", label: "Leads", badge: "leads" },
     ],
   },
 ];
@@ -93,7 +94,13 @@ export function PainelNav({
                           active ? "bg-surface-2 font-bold text-ink" : "text-muted hover:bg-surface-2 hover:text-ink"
                         }`}
                       >
-                        {n.label}
+                        <span className="flex items-center gap-3">
+                          <Icon
+                            name={n.icon}
+                            className={`h-5 w-5 shrink-0 ${active ? "text-accent" : ""}`}
+                          />
+                          {n.label}
+                        </span>
                         {count > 0 && (
                           <span
                             className={`min-w-6 rounded-full px-2 text-center text-xs font-bold ${
