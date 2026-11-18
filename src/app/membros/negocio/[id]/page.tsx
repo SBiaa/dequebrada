@@ -13,7 +13,7 @@ export default async function RedePage({ params, searchParams }: PageProps<"/mem
   return (
     <div className="px-5 py-10 md:py-14">
       <div className="mx-auto max-w-4xl">
-        <RedeDetail userId={user.id} accountId={id} base="/membros/negocio" novo={!!sp.novo} />
+        <RedeDetail userId={user.id} accountId={id} base="/membros/negocio" novo={!!sp.novo} form={typeof sp.form === "string" ? sp.form : undefined} />
       </div>
     </div>
   );
