@@ -43,6 +43,13 @@
       "when": 1794952281770,
       "tag": "0005_negocio_membros",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795008897102,
+      "tag": "0006_banners",
+      "breakpoints": true
     }
   ]
 }

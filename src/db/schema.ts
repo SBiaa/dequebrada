@@ -282,3 +282,29 @@ export const socialPosts = pgTable(
 export type SocialAccount = typeof socialAccounts.$inferSelect;
 export type SocialSnapshot = typeof socialSnapshots.$inferSelect;
 export type SocialPost = typeof socialPosts.$inferSelect;
+
+/**
+ * Banners da home (parcerias com prefeituras e outros), enviados pelo painel.
+ * Aparece quando `active` e dentro do período (início/fim opcionais, inclusive).
+ */
+export const banners = pgTable(
+  "banners",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Nome interno (ex.: "Prefeitura de Poá, Campanha vacinação"). Não aparece no site. */
+    title: text("title").notNull(),
+    imageUrl: text("image_url").notNull(),
+    imageAlt: text("image_alt").notNull(),
+    /** Link ao clicar. null = banner sem link. */
+    linkUrl: text("link_url"),
+    active: boolean("active").notNull().default(true),
+    startsAt: date("starts_at", { mode: "string" }),
+    endsAt: date("ends_at", { mode: "string" }),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("banners_active_idx").on(t.active, t.sortOrder)],
+);
+
+export type BannerRow = typeof banners.$inferSelect;

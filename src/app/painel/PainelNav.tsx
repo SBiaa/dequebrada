@@ -25,6 +25,7 @@ const GROUPS = [
     title: "Vendas",
     links: [
       { href: "/painel/produtos", label: "Produtos da loja" },
+      { href: "/painel/banners", label: "Banners da home" },
       { href: "/painel/quizzes", label: "Quizzes" },
       { href: "/painel/leads", label: "Leads" },
     ],
