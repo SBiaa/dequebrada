@@ -12,7 +12,8 @@
     "admin:create": "node scripts/create-admin.mjs",
     "mapa:gerar": "node --experimental-strip-types --no-warnings scripts/gerar-mapa-regiao.mjs",
     "seed:categorias": "node --experimental-strip-types --no-warnings scripts/seed-categorias.mjs",
-    "seed:quizzes": "node --experimental-strip-types --no-warnings scripts/seed-quizzes.mjs"
+    "seed:quizzes": "node --experimental-strip-types --no-warnings scripts/seed-quizzes.mjs",
+    "seed:demo": "node scripts/seed-demo.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
