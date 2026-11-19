@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" font-family="Arial, Helvetica, sans-serif">
+<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#c2410c"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs>
+<rect width="1200" height="300" fill="url(#g)"/>
+<circle cx="1080" cy="60" r="170" fill="#fff" opacity=".08"/><circle cx="1150" cy="280" r="110" fill="#fff" opacity=".08"/>
+<text x="70" y="78" fill="#fff" opacity=".85" font-size="24" font-weight="700" letter-spacing="3">PARCEIRO DE EXEMPLO</text>
+<text x="70" y="160" fill="#fff" font-size="62" font-weight="800">Empreenda na quebrada</text>
+<text x="70" y="215" fill="#fff" opacity=".92" font-size="28">Curso gratuito de gestão para pequenos negócios.</text>
+<rect x="70" y="238" width="250" height="44" rx="22" fill="#fff"/>
+<text x="195" y="267" fill="#c2410c" font-size="20" font-weight="700" text-anchor="middle">Inscreva-se</text>
+<text x="1130" y="285" fill="#fff" opacity=".6" font-size="14" text-anchor="end">BANNER FICTÍCIO · EXEMPLO</text>
+</svg>

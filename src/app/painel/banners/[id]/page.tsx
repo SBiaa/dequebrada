@@ -34,6 +34,7 @@ export default async function EditarBannerPage({ params, searchParams }: PagePro
           startsAt: b.startsAt ?? "",
           endsAt: b.endsAt ?? "",
           sortOrder: String(b.sortOrder),
+          placement: b.placement,
           imageUrl: b.imageUrl,
           active: b.active,
         }}

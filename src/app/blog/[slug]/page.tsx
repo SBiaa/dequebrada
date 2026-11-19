@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PostAd } from "@/components/blog/PostAd";
 import { PostCard } from "@/components/blog/PostCard";
+import { listLiveBanners } from "@/lib/banners";
 import { Section } from "@/components/ui/Section";
 import { formatDate, getPublishedPost, relatedPosts, renderMarkdown } from "@/lib/blog";
 import { SITE } from "@/lib/site";
@@ -46,6 +48,18 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
   if (!post) notFound();
   const related = await relatedPosts(post.id, post.categoryId);
   const base = siteUrl();
+  const ads = await listLiveBanners("blog").catch((e) => {
+    console.error("Não foi possível carregar os anúncios", e);
+    return [];
+  });
+  // Divide o texto em dois e põe um anúncio no meio (e outro no fim, se houver mais de um).
+  const html = renderMarkdown(post.body);
+  const blocks = html.split(/(?<=<\/(?:p|ul|ol|blockquote|h2|h3)>)/);
+  const mid = Math.ceil(blocks.length / 2);
+  const firstHalf = ads.length && blocks.length > 3 ? blocks.slice(0, mid).join("") : html;
+  const secondHalf = ads.length && blocks.length > 3 ? blocks.slice(mid).join("") : "";
+  const midAd = ads.length ? ads[[...post.slug].reduce((n, c) => n + c.charCodeAt(0), 0) % ads.length] : null;
+  const endAd = ads.length > 1 ? ads.find((a) => a.id !== midAd?.id) ?? null : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -101,10 +115,10 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
             />
           </figure>
         )}
-        <div
-          className="prose-post mx-auto mt-10 max-w-3xl"
-          dangerouslySetInnerHTML={{ __html: renderMarkdown(post.body) }}
-        />
+        <div className="prose-post mx-auto mt-10 max-w-3xl" dangerouslySetInnerHTML={{ __html: firstHalf }} />
+        {midAd && <PostAd ad={midAd} />}
+        {secondHalf && <div className="prose-post mx-auto max-w-3xl" dangerouslySetInnerHTML={{ __html: secondHalf }} />}
+        {endAd && <PostAd ad={endAd} />}
       </article>
 
       {related.length > 0 && (

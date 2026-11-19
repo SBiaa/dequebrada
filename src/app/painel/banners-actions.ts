@@ -11,6 +11,7 @@ const { banners } = schema;
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const IMAGE_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+const PLACEMENTS = ["home", "blog", "both"];
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export type BannerFields = {
@@ -20,6 +21,7 @@ export type BannerFields = {
   startsAt: string;
   endsAt: string;
   sortOrder: string;
+  placement: string;
 };
 export type BannerFormState = { error?: string; ok?: string; fields?: BannerFields; at?: number } | undefined;
 
@@ -35,6 +37,7 @@ function read(fd: FormData): BannerFields {
     startsAt: t(fd, "startsAt", 10),
     endsAt: t(fd, "endsAt", 10),
     sortOrder: t(fd, "sortOrder", 6),
+    placement: t(fd, "placement", 10),
   };
 }
 
@@ -63,6 +66,8 @@ async function saveBanner(fd: FormData): Promise<BannerFormState> {
   if (f.startsAt && !DATE.test(f.startsAt)) return { error: "Data de início inválida." };
   if (f.endsAt && !DATE.test(f.endsAt)) return { error: "Data de fim inválida." };
   if (f.startsAt && f.endsAt && f.endsAt < f.startsAt) return { error: "O fim não pode ser antes do início." };
+
+  if (!PLACEMENTS.includes(f.placement)) return { error: "Escolha onde o banner aparece." };
 
   let linkUrl: string | null = null;
   if (f.linkUrl) {
@@ -103,6 +108,7 @@ async function saveBanner(fd: FormData): Promise<BannerFormState> {
     imageUrl,
     imageAlt: f.imageAlt,
     linkUrl,
+    placement: f.placement,
     active,
     startsAt: f.startsAt || null,
     endsAt: f.endsAt || null,
@@ -120,6 +126,7 @@ async function saveBanner(fd: FormData): Promise<BannerFormState> {
   if (existing?.imageUrl && existing.imageUrl !== imageUrl) await deleteImage(existing.imageUrl);
 
   revalidatePath("/");
+  revalidatePath("/blog/[slug]", "page");
   redirect(`/painel/banners/${savedId}?salvo=${active ? "no-ar" : "oculto"}`);
 }
 

@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
-import { sendEmail } from "@/lib/email";
+import { notifyAdmins } from "@/lib/notify";
 import { cleanAnswers, parseSteps } from "@/lib/quiz";
 import { siteUrl } from "@/lib/url";
 
@@ -63,19 +63,6 @@ async function notifyLead(l: {
   instagram: string;
   answers: Record<string, string>;
 }) {
-  let to = (process.env.LEAD_NOTIFY_EMAIL ?? "")
-    .split(",")
-    .map((e) => e.trim())
-    .filter(Boolean);
-  if (to.length === 0) {
-    const admins = await db
-      .select({ email: schema.users.email })
-      .from(schema.users)
-      .where(eq(schema.users.role, "admin"));
-    to = admins.map((a) => a.email);
-  }
-  if (to.length === 0) return;
-
   const lines = [
     `Novo lead no quiz "${l.quiz.title}".`,
     "",
@@ -89,5 +76,5 @@ async function notifyLead(l: {
     `Ver no painel: ${siteUrl()}/painel/leads?quiz=${encodeURIComponent(l.quiz.slug)}`,
   ].filter((x) => x !== null);
   const text = lines.join("\n");
-  await Promise.all(to.map((addr) => sendEmail(addr, `Novo lead: ${l.name} (${l.quiz.title})`, text)));
+  await notifyAdmins(`Novo lead: ${l.name} (${l.quiz.title})`, text);
 }

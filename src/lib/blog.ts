@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, desc, eq, ilike, inArray, ne, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, ilike, inArray, lte, ne, or, sql } from "drizzle-orm";
 import { marked } from "marked";
 import sanitizeHtml from "sanitize-html";
 import { db, schema } from "@/db";
@@ -82,7 +82,8 @@ export type PostListItem = {
   categorySlug: string | null;
 };
 
-const published = eq(posts.status, "published");
+/** Publicado e com data já chegada (posts agendados só aparecem na hora marcada). */
+const published = and(eq(posts.status, "published"), lte(posts.publishedAt, sql`now()`))!;
 
 export async function listPublished(opts: {
   page?: number;

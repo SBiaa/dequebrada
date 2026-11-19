@@ -78,6 +78,23 @@ function Inner({
         />
       </fieldset>
 
+      <fieldset className="space-y-3 rounded-xl border border-line p-5">
+        <legend className="px-2 font-semibold">Onde aparece</legend>
+        {[
+          ["home", "Topo da home", "No carrossel logo no início do site."],
+          ["blog", "Nos posts do blog", "Como anúncio no meio das notícias."],
+          ["both", "Nos dois lugares", "Na home e nos posts."],
+        ].map(([value, label, hint]) => (
+          <label key={value} className="flex cursor-pointer items-start gap-3">
+            <input type="radio" name="placement" value={value} defaultChecked={(v.placement || "home") === value} className="mt-1" />
+            <span>
+              <span className="font-medium">{label}</span>
+              <span className="block text-sm text-muted">{hint}</span>
+            </span>
+          </label>
+        ))}
+      </fieldset>
+
       <Field label="Link ao clicar (opcional)" name="linkUrl" defaultValue={v.linkUrl} hint="Começa com https://. Vazio = banner sem clique." />
 
       <fieldset className="space-y-4 rounded-xl border border-line p-5">
@@ -92,7 +109,7 @@ function Inner({
       <details className="rounded-xl border border-line p-5">
         <summary className="cursor-pointer font-semibold">Opções avançadas</summary>
         <div className="mt-5 max-w-xs">
-          <Field label="Ordem na home" name="sortOrder" defaultValue={v.sortOrder} inputMode="numeric" hint="Menor aparece primeiro." />
+          <Field label="Ordem" name="sortOrder" defaultValue={v.sortOrder} inputMode="numeric" hint="Menor aparece primeiro." />
         </div>
       </details>
 

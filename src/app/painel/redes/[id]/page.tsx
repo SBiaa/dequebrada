@@ -5,5 +5,5 @@ export default async function PainelRedePage({ params, searchParams }: PageProps
   const { id } = await params;
   const sp = await searchParams;
   const user = await requireAdmin(`/painel/redes/${id}`);
-  return <RedeDetail userId={user.id} accountId={id} base="/painel/redes" novo={!!sp.novo} form={typeof sp.form === "string" ? sp.form : undefined} />;
+  return <RedeDetail userId={user.id} accountId={id} base="/painel/redes" novo={!!sp.novo} form={typeof sp.form === "string" ? sp.form : undefined} aba={typeof sp.aba === "string" ? sp.aba : undefined} />;
 }

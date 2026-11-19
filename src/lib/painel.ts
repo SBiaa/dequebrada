@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte } from "drizzle-orm";
+import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm";
 import { db, schema } from "@/db";
 
 const { users, leads, posts } = schema;
@@ -55,22 +55,58 @@ export async function painelQueue() {
   return { pendentes, leadsNovos, rascunhos };
 }
 
-/** Números do mês corrente. */
+/** Números do Início: mês corrente, últimos 7 dias contra os 7 anteriores, e leads por quiz no mês. */
 export async function painelStats() {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const [[publicados], [ativos], [leadsMes]] = await Promise.all([
-    db
-      .select({ n: count() })
-      .from(posts)
-      .where(and(eq(posts.status, "published"), gte(posts.publishedAt, monthStart))),
-    db
-      .select({ n: count() })
-      .from(users)
-      .where(and(eq(users.role, "member"), eq(users.isSubscriber, true))),
-    db.select({ n: count() }).from(leads).where(gte(leads.createdAt, monthStart)),
-  ]);
-  return { publicados: publicados.n, ativos: ativos.n, leadsMes: leadsMes.n };
+  const week = daysAgo(7);
+  const prevWeek = daysAgo(14);
+  const n = (rows: { n: number }[]) => rows[0]?.n ?? 0;
+  const [publicados, agendados, ativos, contas7, contasAnt, leads7, leadsAnt, leadsMes, fechadosMes, porQuiz] =
+    await Promise.all([
+      db
+        .select({ n: count() })
+        .from(posts)
+        .where(and(eq(posts.status, "published"), gte(posts.publishedAt, monthStart), lte(posts.publishedAt, now))),
+      db
+        .select({ n: count() })
+        .from(posts)
+        .where(and(eq(posts.status, "published"), gt(posts.publishedAt, now))),
+      db
+        .select({ n: count() })
+        .from(users)
+        .where(and(eq(users.role, "member"), eq(users.isSubscriber, true))),
+      db.select({ n: count() }).from(users).where(and(eq(users.role, "member"), gte(users.createdAt, week))),
+      db
+        .select({ n: count() })
+        .from(users)
+        .where(and(eq(users.role, "member"), gte(users.createdAt, prevWeek), lt(users.createdAt, week))),
+      db.select({ n: count() }).from(leads).where(gte(leads.createdAt, week)),
+      db.select({ n: count() }).from(leads).where(and(gte(leads.createdAt, prevWeek), lt(leads.createdAt, week))),
+      db.select({ n: count() }).from(leads).where(gte(leads.createdAt, monthStart)),
+      db
+        .select({ n: count() })
+        .from(leads)
+        .where(and(gte(leads.createdAt, monthStart), eq(leads.status, "fechado"))),
+      db
+        .select({ title: leads.quizTitle, n: count() })
+        .from(leads)
+        .where(gte(leads.createdAt, monthStart))
+        .groupBy(leads.quizTitle)
+        .orderBy(desc(count())),
+    ]);
+  return {
+    publicados: n(publicados),
+    agendados: n(agendados),
+    ativos: n(ativos),
+    contas7: n(contas7),
+    contasAnt: n(contasAnt),
+    leads7: n(leads7),
+    leadsAnt: n(leadsAnt),
+    leadsMes: n(leadsMes),
+    fechadosMes: n(fechadosMes),
+    porQuiz,
+  };
 }
 
 /** Link do WhatsApp com mensagem pronta para o lead. */
@@ -90,4 +126,47 @@ export function tempoRelativo(d: Date): string {
   if (dias === 1) return "ontem";
   if (dias < 7) return `há ${dias} dias`;
   return d.toLocaleDateString("pt-BR", { day: "numeric", month: "short", timeZone: "America/Sao_Paulo" });
+}
+
+/** Date -> "AAAA-MM-DDTHH:mm" no horário de Brasília (valor do campo datetime-local). */
+export function toScheduleInput(d: Date): string {
+  return new Date(d.getTime() - 3 * 3_600_000).toISOString().slice(0, 16);
+}
+
+/** "21 de nov., 09:00" no horário de Brasília. */
+export function scheduleLabel(d: Date | null): string {
+  if (!d) return "";
+  return d.toLocaleString("pt-BR", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
+  });
+}
+
+/**
+ * Planilha CSV que abre certa no Excel em português: separador ";", BOM UTF-8 para os acentos
+ * e proteção contra fórmula (célula começando com = + - @ vira texto).
+ */
+export function csvResponse(filename: string, header: string[], rows: (string | number | null)[][]): Response {
+  const cell = (v: string | number | null) => {
+    let s = v === null ? "" : String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+    return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const body = [header, ...rows].map((r) => r.map(cell).join(";")).join("\r\n");
+  return new Response(`﻿${body}\r\n`, {
+    headers: {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
+/** Data e hora de Brasília para planilha: "19/11/2026 14:05". */
+export function csvDate(d: Date | null): string {
+  if (!d) return "";
+  return d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
 }
