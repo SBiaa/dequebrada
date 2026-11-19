@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { parseSteps } from "@/lib/quiz";
+import { ConfirmDelete } from "@/components/negocio/ui";
 import { deleteQuizAction } from "../../quizzes-actions";
 import { QuizEditor } from "../QuizEditor";
 
@@ -13,21 +15,29 @@ export default async function EditarQuizPage({ params, searchParams }: PageProps
   if (!UUID.test(id)) notFound();
   const [q] = await db.select().from(schema.quizzes).where(eq(schema.quizzes.id, id)).limit(1);
   if (!q) notFound();
+  const [{ n }] = await db.select({ n: count() }).from(schema.leads).where(eq(schema.leads.quizSlug, q.slug));
 
   return (
     <>
-      <h1 className="h2-section mb-8">Editar quiz</h1>
+      <Link href="/painel/quizzes" className="text-sm text-muted hover:text-ink">
+        ← Quizzes
+      </Link>
+      <h1 className="h2-section mb-6 mt-2 [overflow-wrap:anywhere]">{q.title}</h1>
       <QuizEditor
         notice={sp.salvo ? "Quiz criado." : undefined}
+        leads={n}
         values={{ ...q, steps: parseSteps(q.steps) }}
       />
-      <form action={deleteQuizAction} className="mt-12 border-t border-line pt-6">
-        <input type="hidden" name="id" value={q.id} />
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6">
         <p className="text-sm text-muted">Apagar o quiz tira ele do ar. Os leads que já chegaram continuam salvos.</p>
-        <button type="submit" className="btn btn-ghost mt-3 !min-h-10 !text-sm">
-          Apagar quiz
-        </button>
-      </form>
+        <ConfirmDelete
+          action={deleteQuizAction}
+          fields={{ id: q.id }}
+          label="Apagar quiz"
+          warning={`Apagar "${q.title}"? Não dá para desfazer.`}
+          confirmLabel="Sim, apagar quiz"
+        />
+      </div>
     </>
   );
 }

@@ -1,9 +1,13 @@
+import Link from "next/link";
 import { QuizEditor } from "../QuizEditor";
 
 export default function NovoQuizPage() {
   return (
     <>
-      <h1 className="h2-section mb-8">Novo quiz</h1>
+      <Link href="/painel/quizzes" className="text-sm text-muted hover:text-ink">
+        ← Quizzes
+      </Link>
+      <h1 className="h2-section mb-6 mt-2">Novo quiz</h1>
       <QuizEditor
         values={{
           id: "",
