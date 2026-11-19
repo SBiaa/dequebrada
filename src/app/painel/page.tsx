@@ -22,6 +22,13 @@ type Item =
   | { kind: "lead"; id: string; at: Date; title: string; meta: string; wa: string }
   | { kind: "rascunho"; id: string; at: Date; title: string; meta: string };
 
+/** "↑ 3 a mais que nos 7 dias anteriores" */
+function compara(atual: number, antes: number): string {
+  if (atual === antes) return "igual aos 7 dias anteriores";
+  const d = atual - antes;
+  return `${d > 0 ? "↑" : "↓"} ${Math.abs(d)} ${d > 0 ? "a mais" : "a menos"} que nos 7 dias anteriores`;
+}
+
 export default async function PainelHome({ searchParams }: PageProps<"/painel">) {
   const sp = await searchParams;
   const f: Filter = FILTERS.some((x) => x.id === sp.f) ? (sp.f as Filter) : "";
@@ -153,18 +160,64 @@ export default async function PainelHome({ searchParams }: PageProps<"/painel">)
       </p>
 
       <h2 className="mt-12 text-lg font-bold">Em números</h2>
-      <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+      <dl className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
         {[
-          { label: "Posts publicados no mês", n: stats.publicados },
+          { label: "Leads nos últimos 7 dias", n: stats.leads7, comp: compara(stats.leads7, stats.leadsAnt) },
+          { label: "Contas novas em 7 dias", n: stats.contas7, comp: compara(stats.contas7, stats.contasAnt) },
           { label: "Assinantes ativos", n: stats.ativos },
-          { label: "Leads no mês", n: stats.leadsMes },
+          {
+            label: "Leads no mês",
+            n: stats.leadsMes,
+            comp:
+              stats.leadsMes > 0
+                ? `${stats.fechadosMes} ${stats.fechadosMes === 1 ? "fechado" : "fechados"} (${Math.round(
+                    (stats.fechadosMes / stats.leadsMes) * 100,
+                  )}%)`
+                : undefined,
+          },
+          { label: "Posts publicados no mês", n: stats.publicados },
+          {
+            label: "Posts agendados",
+            n: stats.agendados,
+            href: stats.agendados > 0 ? "/painel/posts" : undefined,
+          },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-line p-4">
             <dt className="text-sm text-muted">{s.label}</dt>
             <dd className="display text-4xl">{s.n}</dd>
+            {s.comp && <dd className="mt-1 text-xs text-muted">{s.comp}</dd>}
+            {s.href && (
+              <dd className="mt-1 text-xs">
+                <Link href={s.href} className="text-accent hover:underline">
+                  Ver posts
+                </Link>
+              </dd>
+            )}
           </div>
         ))}
       </dl>
+
+      {stats.porQuiz.length > 0 && (
+        <>
+          <h3 className="mt-8 font-bold">Leads por quiz no mês</h3>
+          <ul className="mt-3 space-y-2">
+            {stats.porQuiz.map((q) => (
+              <li key={q.title} className="flex items-center gap-3 text-sm">
+                <span className="w-44 shrink-0 truncate sm:w-60" title={q.title}>
+                  {q.title}
+                </span>
+                <span className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+                  <span
+                    className="block h-full rounded-full bg-accent"
+                    style={{ width: `${(q.n / stats.porQuiz[0].n) * 100}%` }}
+                  />
+                </span>
+                <span className="w-8 text-right font-bold tabular-nums">{q.n}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </>
   );
 }

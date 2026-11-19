@@ -66,7 +66,16 @@ export default async function AssinantesPage({ searchParams }: PageProps<"/paine
 
   return (
     <>
-      <h1 className="h2-section">Assinantes</h1>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h1 className="h2-section">Assinantes</h1>
+        <a
+          href={tab === "ativo" || tab === "gratis" ? `/painel/assinantes/exportar?f=${tab}` : "/painel/assinantes/exportar"}
+          download
+          className="btn btn-ghost !min-h-10 !text-sm"
+        >
+          Baixar planilha (CSV)
+        </a>
+      </div>
       <p className="mt-2 max-w-2xl text-muted">
         Quem pagou pelo WhatsApp: confira o pagamento e clique em <strong className="text-ink">Liberar acesso</strong>.
         Contas novas dos últimos {PENDING_DAYS} dias aparecem como &quot;Esperando&quot;.

@@ -18,6 +18,7 @@ export type PostFields = {
   coverAlt: string;
   categoryId: number | null;
   authorName: string;
+  scheduleAt: string;
 };
 
 export type PostFormState = { error?: string; ok?: string; fields?: PostFields; at?: number } | undefined;
@@ -74,6 +75,7 @@ export async function savePostAction(_: PostFormState, formData: FormData): Prom
       coverAlt: text(formData, "coverAlt", 200),
       categoryId: Number(formData.get("categoryId")) || null,
       authorName: text(formData, "authorName", 100),
+      scheduleAt: text(formData, "scheduleAt", 16),
     },
   };
 }
@@ -91,6 +93,10 @@ async function savePost(formData: FormData): Promise<PostFormState> {
   const categoryId = categoryRaw ? Number(categoryRaw) : null;
   const intent = formData.get("intent") === "publish" ? "published" : "draft";
   const slug = slugify(text(formData, "slug", 100) || title);
+  // "Agendar para": datetime-local no horário de Brasília (sem horário de verão desde 2019).
+  const scheduleRaw = text(formData, "scheduleAt", 16);
+  const scheduleAt = scheduleRaw ? new Date(`${scheduleRaw}:00-03:00`) : null;
+  if (scheduleAt && Number.isNaN(scheduleAt.getTime())) return { error: "Data de agendamento inválida." };
 
   if (!title) return { error: "Escreva o título." };
   if (!slug) return { error: "O endereço (slug) ficou vazio. Use letras ou números no título." };
@@ -145,7 +151,10 @@ async function savePost(formData: FormData): Promise<PostFormState> {
     readingMinutes: readingMinutes(body),
     updatedAt: new Date(),
     publishedAt:
-      intent === "published" ? (existing?.publishedAt ?? new Date()) : (existing?.publishedAt ?? null),
+      intent === "published"
+        ? (scheduleAt ??
+          (existing?.publishedAt && existing.publishedAt <= new Date() ? existing.publishedAt : new Date()))
+        : (scheduleAt ?? existing?.publishedAt ?? null),
   };
 
   if (existing?.coverUrl && existing.coverUrl !== coverUrl) await deleteCover(existing.coverUrl);
@@ -159,7 +168,9 @@ async function savePost(formData: FormData): Promise<PostFormState> {
   }
 
   refreshBlog();
-  redirect(`/painel/posts/${savedId}?salvo=${intent === "published" ? "publicado" : "rascunho"}`);
+  const salvo =
+    intent === "published" ? (scheduleAt && scheduleAt > new Date() ? "agendado" : "publicado") : "rascunho";
+  redirect(`/painel/posts/${savedId}?salvo=${salvo}`);
 }
 
 export async function deletePostAction(formData: FormData): Promise<void> {

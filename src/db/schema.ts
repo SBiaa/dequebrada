@@ -297,6 +297,8 @@ export const banners = pgTable(
     imageAlt: text("image_alt").notNull(),
     /** Link ao clicar. null = banner sem link. */
     linkUrl: text("link_url"),
+    /** Onde aparece: "home" (carrossel do topo), "blog" (anúncio nos posts) ou "both". */
+    placement: text("placement").notNull().default("home"),
     active: boolean("active").notNull().default(true),
     startsAt: date("starts_at", { mode: "string" }),
     endsAt: date("ends_at", { mode: "string" }),

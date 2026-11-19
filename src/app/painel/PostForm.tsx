@@ -23,6 +23,8 @@ export type PostFormValues = {
   categoryId: number | null;
   authorName: string;
   status: "draft" | "published";
+  /** "AAAA-MM-DDTHH:mm" no horário de Brasília, só quando a data de publicação está no futuro. */
+  scheduleAt?: string;
 };
 
 export function PostForm({
@@ -212,6 +214,24 @@ function Inner({
           </div>
 
           <Field label="Autor" name="authorName" defaultValue={values.authorName} maxLength={100} />
+
+          <div>
+            <label htmlFor="scheduleAt" className="block font-semibold">
+              Agendar publicação
+            </label>
+            <input
+              id="scheduleAt"
+              name="scheduleAt"
+              type="datetime-local"
+              defaultValue={values.scheduleAt ?? ""}
+              aria-describedby="scheduleAt-hint"
+              className={inputClass}
+            />
+            <p id="scheduleAt-hint" className="mt-1 text-sm text-muted">
+              Opcional, horário de Brasília. Escolha a data e clique em Publicar: o post só aparece no site na hora
+              marcada. Deixe vazio para publicar agora.
+            </p>
+          </div>
 
           <fieldset className="space-y-4 rounded-xl border border-line p-5">
             <legend className="px-2 font-semibold">Imagem de capa</legend>

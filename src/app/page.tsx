@@ -27,9 +27,9 @@ export default function Home() {
   return (
     <>
       <LocalBusinessJsonLd />
+      <Banners />
       <HomeHero />
       <Stats items={BRAND_STATS} />
-      <Banners />
       <NewsPreview />
       <Products />
       <RaioX />

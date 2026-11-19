@@ -1,0 +1,1 @@
+ALTER TABLE "banners" ADD COLUMN "placement" text DEFAULT 'home' NOT NULL;

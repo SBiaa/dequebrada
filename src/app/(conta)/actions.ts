@@ -3,6 +3,8 @@
 import { and, eq, gt, isNull } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
+import { notifyAdmins } from "@/lib/notify";
 import { db, schema } from "@/db";
 import {
   MIN_PASSWORD,
@@ -161,6 +163,18 @@ export async function signupAction(_: FormState, formData: FormData): Promise<Fo
     .values({ name, email, passwordHash: await hashPassword(password), role: "member", consentAt: new Date() })
     .returning({ id: users.id });
   await createSession(user.id);
+  // Aviso ao painel roda depois da resposta, para não atrasar o cadastro.
+  after(() =>
+    notifyAdmins(
+      `Nova conta: ${name}`,
+      [
+        `${name} (${email}) criou uma conta no site.`,
+        "",
+        "Se a pessoa já pagou a assinatura, libere o acesso em:",
+        `${siteUrl()}/painel/assinantes?f=esperando`,
+      ].join("\n"),
+    ),
+  );
   redirect("/membros?bemvindo=1");
 }
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { formatDate } from "@/lib/blog";
+import { scheduleLabel } from "@/lib/painel";
 
 const { posts, categories } = schema;
 
@@ -13,12 +14,17 @@ export default async function PostsPage({ searchParams }: PageProps<"/painel/pos
       title: posts.title,
       slug: posts.slug,
       status: posts.status,
+      publishedAt: posts.publishedAt,
       updatedAt: posts.updatedAt,
       category: categories.name,
     })
     .from(posts)
     .leftJoin(categories, eq(posts.categoryId, categories.id))
     .orderBy(desc(posts.updatedAt));
+
+  const now = new Date();
+  const isScheduled = (p: (typeof rows)[number]) =>
+    p.status === "published" && !!p.publishedAt && p.publishedAt > now;
 
   return (
     <>
@@ -51,10 +57,18 @@ export default async function PostsPage({ searchParams }: PageProps<"/painel/pos
               </div>
               <span
                 className={`w-fit shrink-0 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
-                  p.status === "published" ? "bg-accent text-accent-ink" : "border border-line text-muted"
+                  isScheduled(p)
+                    ? "bg-warn-bg text-warn"
+                    : p.status === "published"
+                      ? "bg-accent text-accent-ink"
+                      : "border border-line text-muted"
                 }`}
               >
-                {p.status === "published" ? "Publicado" : "Rascunho"}
+                {isScheduled(p)
+                  ? `Agendado · ${scheduleLabel(p.publishedAt)}`
+                  : p.status === "published"
+                    ? "Publicado"
+                    : "Rascunho"}
               </span>
             </li>
           ))}

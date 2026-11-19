@@ -61,6 +61,13 @@ export default async function LeadsPage({ searchParams }: PageProps<"/painel/lea
           <h1 className="h2-section">Leads</h1>
           <p className="mt-2 text-muted">Quem respondeu os quizzes. Chame no WhatsApp e marque o andamento.</p>
         </div>
+        <a
+          href={quiz ? `/painel/leads/exportar?quiz=${encodeURIComponent(quiz)}` : "/painel/leads/exportar"}
+          download
+          className="btn btn-ghost !min-h-10 !text-sm"
+        >
+          Baixar planilha (CSV)
+        </a>
       </div>
 
       <nav aria-label="Filtrar por andamento" className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-5">
