@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { NAV_LINKS, WHATSAPP_MESSAGES } from "@/lib/site";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 
 function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
@@ -52,6 +53,8 @@ export function Header() {
             })}
           </ul>
         </nav>
+
+        <ThemeToggle className="ml-auto xl:ml-0" />
 
         <button
           type="button"
