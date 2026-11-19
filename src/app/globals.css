@@ -15,7 +15,9 @@
   --warn-line: rgb(242 193 78 / 0.45);
 }
 
-.light {
+.light,
+html[data-theme="light"] {
+  color-scheme: light;
   --bg: #f6f3ec;
   --surface: #ffffff;
   --surface-2: #efebe1;
@@ -48,7 +50,7 @@
 
 html {
   scroll-behavior: smooth;
-  background: #070d18;
+  background: var(--bg);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -407,6 +409,30 @@ body {
   .region-map .rm-pulse {
     display: none;
   }
+}
+
+/* ---------- Mapa no tema claro ---------- */
+html[data-theme="light"] .region-map .rm-context { fill: #e6e1d4; }
+html[data-theme="light"] .region-map .rm-city { fill: #d3dcea; stroke: rgb(10 110 163 / 0.35); }
+html[data-theme="light"] .region-map .rm-city[data-empty] { fill: #e4e0d4; stroke: rgb(10 110 163 / 0.2); }
+html[data-theme="light"] .region-map .rm-city:hover { fill: #b9cae2; }
+html[data-theme="light"] .region-map .rm-badge circle,
+html[data-theme="light"] .region-map .rm-label rect { fill: #ffffff; }
+html[data-theme="light"] .region-map .rm-badge[data-active] circle { fill: var(--accent); stroke: var(--accent); }
+html[data-theme="light"] .region-map .rm-selected-edge { stroke: var(--ink); }
+@media (min-width: 1024px) {
+  html[data-theme="light"] .region-map .rm-context { fill: #ebe7db; }
+  html[data-theme="light"] .region-map .rm-city { fill: #d6dfec; stroke: none; }
+  html[data-theme="light"] .region-map .rm-city[data-empty] { fill: #e6e2d6; stroke: none; }
+  html[data-theme="light"] .region-map .rm-city[data-hover],
+  html[data-theme="light"] .region-map .rm-city:focus-visible { fill: #bccde4; }
+  html[data-theme="light"] .region-map .rm-city[aria-pressed="true"] { fill: rgb(10 110 163 / 0.25); }
+  html[data-theme="light"] .region-map .rm-line { stroke: rgb(75 88 112 / 0.5); }
+  html[data-theme="light"] .region-map .rm-line[data-hover] { stroke: var(--ink); }
+  html[data-theme="light"] .region-map .rm-dlabel text { fill: rgb(11 20 36 / 0.9); stroke: #f6f3ec; }
+  html[data-theme="light"] .region-map .rm-dlabel[data-kind="empty"] text { fill: rgb(75 88 112 / 0.9); }
+  html[data-theme="light"] .region-map .rm-dlabel[data-kind="context"] text { fill: rgb(75 88 112 / 0.6); }
+  html[data-theme="light"] .region-map .rm-dlabel[data-kind="selected"] text { fill: var(--accent-ink); stroke: none; }
 }
 
 /* Rolagem horizontal sem barra nativa (chips) */

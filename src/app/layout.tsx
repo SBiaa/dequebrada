@@ -43,7 +43,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className={`${bebas.variable} ${inter.variable}`}>
+    <html lang="pt-BR" className={`${bebas.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Aplica o tema salvo antes da primeira pintura, sem piscar. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-screen">
         <a
           href="#conteudo"

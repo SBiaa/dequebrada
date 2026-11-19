@@ -1,10 +1,10 @@
 import type { Platform } from "@/data/channels";
 
 const COLORS: Record<Platform, string> = {
-  Instagram: "text-[#ff5f9e]",
-  TikTok: "text-[#25f4ee]",
-  YouTube: "text-[#ff3b3b]",
-  Spotify: "text-[#1ed760]",
+  Instagram: "text-[#ff5f9e] in-data-[theme=light]:text-[#d6246e]",
+  TikTok: "text-[#25f4ee] in-data-[theme=light]:text-[#0a9a96]",
+  YouTube: "text-[#ff3b3b] in-data-[theme=light]:text-[#d92020]",
+  Spotify: "text-[#1ed760] in-data-[theme=light]:text-[#12923f]",
 };
 
 export function SocialIcon({
